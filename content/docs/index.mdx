@@ -54,10 +54,9 @@ You can go deeper into anything here. If you don't know how something works, **g
 We built this so you can read the code, understand the stack traces, and realize that **you can do anything**. Don't let anyone tell you otherwise. The code is open. The door is open. Come in and build something amazing. 💙
 
 ---
-
 ## Let's get you running
 
-Enough talking, let's make some noise. We support Linux, Windows, and macOS.
+Enough talking, let's make some noise. NodeLink requires only Node.js, which runs on Linux, Windows, and macOS.
 
 <Steps>
   <Step>
@@ -86,7 +85,7 @@ Enough talking, let's make some noise. We support Linux, Windows, and macOS.
         ```
       </Tab>
       <Tab value="macOS">
-        If you have **Homebrew** installed (you should!), it's a breeze:
+        If you have **Homebrew** installed, it's a breeze:
         ```bash
         brew install node
         brew install git
@@ -94,20 +93,22 @@ Enough talking, let's make some noise. We support Linux, Windows, and macOS.
       </Tab>
     </Tabs>
   </Step>
+
   <Step>
     ### Clone the Magic
     
-    Bring the code home.
+    Bring the project to your machine.
     
     ```bash
     git clone https://github.com/PerformanC/NodeLink.git
     cd NodeLink
     ```
   </Step>
+
   <Step>
     ### Install Dependencies
     
-    We support **npm**, **yarn**, **pnpm**, and the blazing fast **Bun**.
+    Install the project dependencies using your preferred package manager.
     
     <Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
       <Tab value="npm">
@@ -132,10 +133,11 @@ Enough talking, let's make some noise. We support Linux, Windows, and macOS.
       </Tab>
     </Tabs>
   </Step>
+
   <Step>
     ### Config & Fly
     
-    Copy the default config file to `config.js` and start the server.
+    Copy the default configuration and start the server.
     
     <Tabs items={['Bash (Linux/macOS)', 'PowerShell (Windows)', 'CMD (Windows)']}>
       <Tab value="Bash (Linux/macOS)">
@@ -161,16 +163,17 @@ Enough talking, let's make some noise. We support Linux, Windows, and macOS.
 </Steps>
 
 <Callout type="warn" title="Heads up!">
-  If anything weird pops up, report it on our GitHub or Discord! We patch things fast. Thanks to everyone who keeps testing and helping push NodeLink forward. 💙
+  If anything strange happens, report it on our GitHub or join our Discord!  
+  Fast feedback means fast fixes. Thanks to everyone helping improve NodeLink. 💙
 </Callout>
 
 ## Where to go next?
 
 <Cards>
   <Card title="Configuration" href="/docs/config">
-    Tweak the engine. Set up your sources, filters, and limits.
+    Tweak the engine. Configure your sources, filters, and limits.
   </Card>
   <Card title="API Reference" href="/docs/API">
-    For the nerds who want to see the raw HTTP/WebSocket endpoints.
+    For the curious minds who want to see the raw endpoints.
   </Card>
 </Cards>
