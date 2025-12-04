@@ -10,6 +10,51 @@ import { ApiCard, ApiSection, ApiSchema } from '@/components/api-ui';
 
 The REST API allows you to manage sessions, players, and resolve audio tracks. All endpoints are prefixed with `/v4`.
 
+## Common Types
+
+<ApiCard name="Track Object" description="Represents an audio track with encoded data and metadata.">
+  <ApiSection title="Track Fields">
+    <ApiSchema name="encoded" type="string" required description="The base64 encoded track data" />
+    <ApiSchema name="info" type="object" required description="Info about the track (see Track Info below)" />
+    <ApiSchema name="pluginInfo" type="object" description="Additional track info provided by plugins" />
+    <ApiSchema name="userData" type="object" description="Additional track data provided via the Update Player endpoint" />
+  </ApiSection>
+  <ApiSection title="Track Info Fields">
+    <ApiSchema name="identifier" type="string" required description="The track identifier" />
+    <ApiSchema name="isSeekable" type="bool" required description="Whether the track is seekable" />
+    <ApiSchema name="author" type="string" required description="The track author" />
+    <ApiSchema name="length" type="int" required description="The track length in milliseconds" />
+    <ApiSchema name="isStream" type="bool" required description="Whether the track is a stream" />
+    <ApiSchema name="position" type="int" required description="The track position in milliseconds" />
+    <ApiSchema name="title" type="string" required description="The track title" />
+    <ApiSchema name="uri" type="string | null" description="The track uri" />
+    <ApiSchema name="artworkUrl" type="string | null" description="The track artwork url" />
+    <ApiSchema name="isrc" type="string | null" description="The track ISRC (International Standard Recording Code)" />
+    <ApiSchema name="sourceName" type="string" required description="The track source name" />
+  </ApiSection>
+  <ApiSection title="Example">
+```json
+{
+  "encoded": "QAAAAAMARFJpY2sgQXN0bGV5IC0gTmV2ZXIgR29ubmEgR2l2ZSBZb3UgVXAgKE9mZmljaWFsIFZpZGVvKSAoNEsgUmVtYXN0ZXIpAAtSaWNrIEFzdGxleQAAAAAAA0PwAAtkUXc0dzlXZ1hjUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWRRdzR3OVdnWGNRAQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2RRdzR3OVdnWGNRL3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA",
+  "info": {
+    "identifier": "dQw4w9WgXcQ",
+    "isSeekable": true,
+    "author": "Rick Astley",
+    "length": 214000,
+    "isStream": false,
+    "position": 0,
+    "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+    "uri": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "artworkUrl": "https://i.ytimg.com/vi_webp/dQw4w9WgXcQ/sddefault.webp",
+    "isrc": null,
+    "sourceName": "youtube"
+  },
+  "pluginInfo": {}
+}
+```
+  </ApiSection>
+</ApiCard>
+
 ## Tracks & Items
 
 <ApiCard name="LoadTracks" method="GET" url="/v4/loadtracks" description="Resolves audio tracks for use in playback. Supports direct URLs, search queries, and playlists.">
@@ -29,17 +74,17 @@ curl -X GET "http://your-server.com/v4/loadtracks?identifier=ytsearch:never%20go
 {
   "loadType": "track",
   "data": {
-    "encoded": "QAAAjQIAJVJpY2sgQXN0bGV5...",
+    "encoded": "QAAAAAMARFJpY2sgQXN0bGV5IC0gTmV2ZXIgR29ubmEgR2l2ZSBZb3UgVXAgKE9mZmljaWFsIFZpZGVvKSAoNEsgUmVtYXN0ZXIpAAtSaWNrIEFzdGxleQAAAAAAA0PwAAtkUXc0dzlXZ1hjUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWRRdzR3OVdnWGNRAQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2RRdzR3OVdnWGNRL3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA",
     "info": {
       "identifier": "dQw4w9WgXcQ",
       "isSeekable": true,
       "author": "Rick Astley",
-      "length": 212000,
+      "length": 214000,
       "isStream": false,
       "position": 0,
-      "title": "Never Gonna Give You Up",
+      "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
       "uri": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "artworkUrl": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      "artworkUrl": "https://i.ytimg.com/vi_webp/dQw4w9WgXcQ/sddefault.webp",
       "isrc": null,
       "sourceName": "youtube"
     },
@@ -54,17 +99,21 @@ curl -X GET "http://your-server.com/v4/loadtracks?identifier=ytsearch:never%20go
   "loadType": "search",
   "data": [
     {
-      "encoded": "QAAAjQIAJVJpY2sgQXN0bGV5...",
+      "encoded": "QAAAAAMARFJpY2sgQXN0bGV5IC0gTmV2ZXIgR29ubmEgR2l2ZSBZb3UgVXAgKE9mZmljaWFsIFZpZGVvKSAoNEsgUmVtYXN0ZXIpAAtSaWNrIEFzdGxleQAAAAAAA0PwAAtkUXc0dzlXZ1hjUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWRRdzR3OVdnWGNRAQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2RRdzR3OVdnWGNRL3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA",
       "info": {
         "identifier": "dQw4w9WgXcQ",
-        "title": "Never Gonna Give You Up",
-        "author": "Rick Astley",
-        "length": 212000,
         "isSeekable": true,
+        "author": "Rick Astley",
+        "length": 214000,
         "isStream": false,
+        "position": 0,
+        "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
         "uri": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "artworkUrl": "https://i.ytimg.com/vi_webp/dQw4w9WgXcQ/sddefault.webp",
+        "isrc": null,
         "sourceName": "youtube"
-      }
+      },
+      "pluginInfo": {}
     }
   ]
 }
@@ -82,14 +131,21 @@ curl -X GET "http://your-server.com/v4/loadtracks?identifier=ytsearch:never%20go
     "pluginInfo": {},
     "tracks": [
       {
-        "encoded": "QAAAjQIAJVJpY2sgQXN0bGV5...",
+        "encoded": "QAAAAAMARFJpY2sgQXN0bGV5IC0gTmV2ZXIgR29ubmEgR2l2ZSBZb3UgVXAgKE9mZmljaWFsIFZpZGVvKSAoNEsgUmVtYXN0ZXIpAAtSaWNrIEFzdGxleQAAAAAAA0PwAAtkUXc0dzlXZ1hjUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWRRdzR3OVdnWGNRAQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2RRdzR3OVdnWGNRL3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA",
         "info": {
           "identifier": "dQw4w9WgXcQ",
-          "title": "Never Gonna Give You Up",
+          "isSeekable": true,
           "author": "Rick Astley",
-          "length": 212000,
+          "length": 214000,
+          "isStream": false,
+          "position": 0,
+          "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+          "uri": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          "artworkUrl": "https://i.ytimg.com/vi_webp/dQw4w9WgXcQ/sddefault.webp",
+          "isrc": null,
           "sourceName": "youtube"
-        }
+        },
+        "pluginInfo": {}
       }
     ]
   }
@@ -135,16 +191,16 @@ curl -X GET "http://your-server.com/v4/decodetrack?encodedTrack=QAAAjQIAJVJpY2sg
       <Accordion title="Example Response">
 ```json
 {
-  "encoded": "QAAAjQIAJVJpY2sgQXN0bGV5...",
+  "encoded": "QAAAAAMARFJpY2sgQXN0bGV5IC0gTmV2ZXIgR29ubmEgR2l2ZSBZb3UgVXAgKE9mZmljaWFsIFZpZGVvKSAoNEsgUmVtYXN0ZXIpAAtSaWNrIEFzdGxleQAAAAAAA0PwAAtkUXc0dzlXZ1hjUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWRRdzR3OVdnWGNRAQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2RRdzR3OVdnWGNRL3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA",
   "info": {
-    "title": "Never Gonna Give You Up",
+    "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
     "author": "Rick Astley",
-    "length": 212000,
+    "length": 214000,
     "identifier": "dQw4w9WgXcQ",
     "isSeekable": true,
     "isStream": false,
     "uri": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "artworkUrl": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    "artworkUrl": "https://i.ytimg.com/vi_webp/dQw4w9WgXcQ/sddefault.webp",
     "isrc": null,
     "sourceName": "youtube",
     "position": 0
@@ -176,16 +232,19 @@ curl -X POST "http://your-server.com/v4/decodetracks" \
 ```json
 [
   {
-    "encoded": "QAAAjQIAJVJpY2sgQXN0bGV5...",
+    "encoded": "QAAAAAMARFJpY2sgQXN0bGV5IC0gTmV2ZXIgR29ubmEgR2l2ZSBZb3UgVXAgKE9mZmljaWFsIFZpZGVvKSAoNEsgUmVtYXN0ZXIpAAtSaWNrIEFzdGxleQAAAAAAA0PwAAtkUXc0dzlXZ1hjUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWRRdzR3OVdnWGNRAQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2RRdzR3OVdnWGNRL3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA",
     "info": {
-      "title": "Never Gonna Give You Up",
+      "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
       "author": "Rick Astley",
-      "length": 213000,
+      "length": 214000,
       "identifier": "dQw4w9WgXcQ",
       "isSeekable": true,
       "isStream": false,
       "uri": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "sourceName": "youtube"
+      "artworkUrl": "https://i.ytimg.com/vi_webp/dQw4w9WgXcQ/sddefault.webp",
+      "isrc": null,
+      "sourceName": "youtube",
+      "position": 0
     },
     "pluginInfo": {},
     "userData": {}
@@ -207,7 +266,7 @@ curl -X POST "http://your-server.com/v4/decodetracks" \
       <Accordion title="Example Response">
 
 ```json
-"BASE64_ENCODED_TRACK_STRING_HERE"
+"QAAAAAMARFJpY2sgQXN0bGV5IC0gTmV2ZXIgR29ubmEgR2l2ZSBZb3UgVXAgKE9mZmljaWFsIFZpZGVvKSAoNEsgUmVtYXN0ZXIpAAtSaWNrIEFzdGxleQAAAAAAA0PwAAtkUXc0dzlXZ1hjUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWRRdzR3OVdnWGNRAQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2RRdzR3OVdnWGNRL3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA"
 ```
 
 </Accordion>
@@ -216,7 +275,7 @@ curl -X POST "http://your-server.com/v4/decodetracks" \
   <ApiSection title="Example Request">
 
 ```bash
-curl -X GET "http://your-server.com/v4/encodetrack?track=%7B%22identifier%22%3A%22test%22%2C%22title%22%3A%22Test%20Track%22%2C%22author%22%3A%22Test%22%2C%22uri%22%3A%22https%3A%2F%2Fexample.com%2Ftest.mp3%22%2C%22sourceName%22%3A%22http%22%7D" \
+curl -X GET "http://your-server.com/v4/encodetrack?track=%7B%22identifier%22%3A%22dQw4w9WgXcQ%22%2C%22title%22%3A%22Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%22%2C%22author%22%3A%22Rick%20Astley%22%2C%22length%22%3A214000%2C%22uri%22%3A%22https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ%22%2C%22sourceName%22%3A%22youtube%22%7D" \
      -H "Authorization: yourPassword"
 ```
   </ApiSection>
@@ -237,19 +296,21 @@ curl -X POST "http://your-server.com/v4/encodedtracks" \
      -d '[
        {
          "info": {
-           "identifier": "test1",
-           "title": "Test Track 1",
-           "author": "Artist",
-           "uri": "https://example.com/track1.mp3",
-           "sourceName": "http"
+           "identifier": "dQw4w9WgXcQ",
+           "title": "Rick Astley - Never Gonna Give You Up",
+           "author": "Rick Astley",
+           "length": 214000,
+           "uri": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+           "sourceName": "youtube"
          }
        },
        {
          "info": {
-           "identifier": "test2",
-           "title": "Test Track 2",
-           "author": "Artist",
-           "uri": "https://example.com/track2.mp3",
+           "identifier": "invalid_track",
+           "title": "Invalid Track",
+           "author": "Unknown",
+           "length": 0,
+           "uri": "https://example.com/invalid",
            "sourceName": "http"
          }
        }
@@ -258,7 +319,16 @@ curl -X POST "http://your-server.com/v4/encodedtracks" \
   </ApiSection>
 
   <ApiSection title="Response">
-Returns an array of base64 encoded track strings in the same order as the input.
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+[
+  "QAAAAAMARFJpY2sgQXN0bGV5IC0gTmV2ZXIgR29ubmEgR2l2ZSBZb3UgVXAgKE9mZmljaWFsIFZpZGVvKSAoNEsgUmVtYXN0ZXIpAAtSaWNrIEFzdGxleQAAAAAAA0PwAAtkUXc0dzlXZ1hjUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWRRdzR3OVdnWGNRAQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2RRdzR3OVdnWGNRL3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA",
+  "QAAAAAIADUludmFsaWQgVHJhY2sAB1Vua25vd24AAAAAAAAAAAANaW52YWxpZF90cmFjawABAB1odHRwczovL2V4YW1wbGUuY29tL2ludmFsaWQAAARodHRwAAAAAAAAAAA="
+]
+```
+      </Accordion>
+    </Accordions>
   </ApiSection>
 </ApiCard>
 
@@ -273,7 +343,51 @@ curl -X GET "http://your-server.com/v4/sessions/yourSessionId/players" \
   </ApiSection>
   
   <ApiSection title="Response">
-Returns an array of player objects for all active guilds in this session.
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+[
+  {
+    "guildId": "990369410344701964",
+    "track": {
+      "encoded": "QAAAAAMAC2dvbGRlbiBob3VyAARKVktFAAAAAAADNFAAC3VWXzVlRXZhbW9RAAEAK2h0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9dVZfNWVFdmFtb1EBADZodHRwczovL2kueXRpbWcuY29tL3ZpX3dlYnAvdVZfNWVFdmFtb1Evc2RkZWZhdWx0LndlYnAAAAd5b3V0dWJlAAAAAAAAAAA=",
+      "info": {
+        "title": "golden hour",
+        "author": "JVKE",
+        "length": 210000,
+        "identifier": "uV_5eEvamoQ",
+        "isSeekable": true,
+        "isStream": false,
+        "uri": "https://www.youtube.com/watch?v=uV_5eEvamoQ",
+        "artworkUrl": "https://i.ytimg.com/vi_webp/uV_5eEvamoQ/sddefault.webp",
+        "isrc": null,
+        "sourceName": "youtube",
+        "position": 0
+      },
+      "endTime": 0,
+      "userData": {
+        "requester": "978981769661513758"
+      }
+    },
+    "volume": 100,
+    "paused": false,
+    "filters": {},
+    "state": {
+      "time": 1764813558539,
+      "position": 5100,
+      "connected": true,
+      "ping": 184
+    },
+    "voice": {
+      "sessionId": "5e3473e2000512df9fd4b25e5e614690",
+      "token": "518000ca380f3f08",
+      "endpoint": "c-gru17-9aec959a.discord.media:2083"
+    }
+  }
+]
+```
+      </Accordion>
+    </Accordions>
   </ApiSection>
 </ApiCard>
 
@@ -286,7 +400,51 @@ curl -X GET "http://your-server.com/v4/sessions/yourSessionId/players/yourGuildI
   </ApiSection>
   
   <ApiSection title="Response">
-Returns the player object including current track, volume, filters, and voice state.
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+{
+  "guildId": "990369410344701964",
+  "track": {
+    "encoded": "QAAAAAMAJmhlciAoZmVhdC4gQW5uaWthIFdlbGxzICYgS2FkZW4gSGF3a2UpAARKVktFAAAAAAADDUAAC0RObVRZVXgwd3FZAAEAK2h0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9RE5tVFlVeDB3cVkBADZodHRwczovL2kueXRpbWcuY29tL3ZpX3dlYnAvRE5tVFlVeDB3cVkvc2RkZWZhdWx0LndlYnAAAAd5b3V0dWJlAAAAAAAAAAA=",
+    "info": {
+      "title": "her (feat. Annika Wells & Kaden Hawke)",
+      "author": "JVKE",
+      "length": 200000,
+      "identifier": "DNmTYUx0wqY",
+      "isSeekable": true,
+      "isStream": false,
+      "uri": "https://www.youtube.com/watch?v=DNmTYUx0wqY",
+      "artworkUrl": "https://i.ytimg.com/vi_webp/DNmTYUx0wqY/sddefault.webp",
+      "isrc": null,
+      "sourceName": "youtube",
+      "position": 0
+    },
+    "endTime": 0,
+    "userData": {
+      "requester": "978981769661513758"
+    }
+  },
+  "volume": 100,
+  "paused": false,
+  "filters": {
+    "filters": {}
+  },
+  "state": {
+    "time": 1764813548928,
+    "position": 196740,
+    "connected": true,
+    "ping": 184
+  },
+  "voice": {
+    "sessionId": "5e3473e2000512df9fd4b25e5e614690",
+    "token": "518000ca380f3f08",
+    "endpoint": "c-gru17-9aec959a.discord.media:2083"
+  }
+}
+```
+      </Accordion>
+    </Accordions>
   </ApiSection>
 </ApiCard>
 
@@ -329,7 +487,51 @@ curl -X PATCH "http://your-server.com/v4/sessions/yourSessionId/players/yourGuil
   </ApiSection>
   
   <ApiSection title="Response">
-Returns the updated player object with all current settings.
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+{
+  "guildId": "990369410344701964",
+  "track": {
+    "encoded": "QAAAAAMARFJpY2sgQXN0bGV5IC0gTmV2ZXIgR29ubmEgR2l2ZSBZb3UgVXAgKE9mZmljaWFsIFZpZGVvKSAoNEsgUmVtYXN0ZXIpAAtSaWNrIEFzdGxleQAAAAAAA0PwAAtkUXc0dzlXZ1hjUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWRRdzR3OVdnWGNRAQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2RRdzR3OVdnWGNRL3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA",
+    "info": {
+      "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+      "author": "Rick Astley",
+      "length": 214000,
+      "identifier": "dQw4w9WgXcQ",
+      "isSeekable": true,
+      "isStream": false,
+      "uri": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "artworkUrl": "https://i.ytimg.com/vi_webp/dQw4w9WgXcQ/sddefault.webp",
+      "isrc": null,
+      "sourceName": "youtube",
+      "position": 0
+    },
+    "endTime": 0,
+    "userData": {}
+  },
+  "volume": 100,
+  "paused": false,
+  "filters": {
+    "equalizer": [
+      {"band": 0, "gain": 0.2}
+    ]
+  },
+  "state": {
+    "time": 1764813548928,
+    "position": 0,
+    "connected": true,
+    "ping": 184
+  },
+  "voice": {
+    "sessionId": "5e3473e2000512df9fd4b25e5e614690",
+    "token": "518000ca380f3f08",
+    "endpoint": "c-gru17-9aec959a.discord.media:2083"
+  }
+}
+```
+      </Accordion>
+    </Accordions>
   </ApiSection>
 </ApiCard>
 
@@ -340,6 +542,15 @@ Returns the updated player object with all current settings.
 curl -X DELETE "http://your-server.com/v4/sessions/yourSessionId/players/yourGuildId" \
           -H "Authorization: yourPassword"
 ```
+  </ApiSection>
+  <ApiSection title="Response">
+    <Accordions>
+      <Accordion title="Success Response">
+```
+204 No Content
+```
+      </Accordion>
+    </Accordions>
   </ApiSection>
 </ApiCard>
 
@@ -354,8 +565,20 @@ curl -X DELETE "http://your-server.com/v4/sessions/yourSessionId/players/yourGui
 curl -X PATCH "http://your-server.com/v4/sessions/yourSessionId" \
           -H "Authorization: yourPassword" \
           -H "Content-Type: application/json" \
-          -d '{"resuming": true, "timeout": 300}'
+          -d '{"resuming": true, "timeout": 60}'
 ```
+  </ApiSection>
+  <ApiSection title="Response">
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+{
+  "resuming": true,
+  "timeout": 60
+}
+```
+      </Accordion>
+    </Accordions>
   </ApiSection>
 </ApiCard>
 
@@ -370,7 +593,25 @@ curl -X GET "http://your-server.com/v4/connection" \
   </ApiSection>
   
   <ApiSection title="Response">
-Returns connection status and detailed metrics about active connections, including WebSocket connections and voice channels.
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+{
+  "status": "good",
+  "metrics": {
+    "speed": {
+      "bps": 23669887.133182842,
+      "kbps": 184920.99322799096,
+      "mbps": 180.59
+    },
+    "downloadedBytes": 10485760,
+    "durationSeconds": 0.44,
+    "timestamp": 1764813556344
+  }
+}
+```
+      </Accordion>
+    </Accordions>
   </ApiSection>
 </ApiCard>
 
@@ -590,7 +831,7 @@ curl -X GET "http://your-server.com/v4/loadlyrics?encodedTrack=QAAAjQIAJVJpY2sgQ
 <ApiCard name="LoadChapters" method="GET" url="/v4/loadchapters" description="Loads chapter markers for YouTube videos that have them.">
   <ApiSection title="Example Request">
 ```bash
-curl -X GET "http://your-server.com/v4/loadchapters?encodedTrack=QAAAjQIAJVJpY2sgQXN0bGV5..." \
+curl -X GET "http://your-server.com/v4/loadchapters?encodedTrack=QAAAAAMAM0hvdyB0byBBZGQgQ2hhcHRlcnMgdG8gWW91ciBWaWRlb3MgVXNpbmcgVGltZXN0YW1wcwAQWW91VHViZSBDcmVhdG9ycwAAAAAAATSYAAtiMUZvX01fdGo2dwABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWIxRm9fTV90ajZ3AQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2IxRm9fTV90ajZ3L3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA" \
      -H "Authorization: yourPassword"
 ```
   </ApiSection>
@@ -603,14 +844,43 @@ curl -X GET "http://your-server.com/v4/loadchapters?encodedTrack=QAAAjQIAJVJpY2s
 ```json
 [
   {
-    "title": "Introduction",
-    "start": 0,
-    "end": 30000
+    "title": "An intro to video chapters",
+    "startTime": 0,
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi_webp/b1Fo_M_tj6w/hqdefault.webp",
+        "width": 336,
+        "height": 188
+      }
+    ],
+    "duration": 23000,
+    "endTime": 23000
   },
   {
-    "title": "Main Content",
-    "start": 30000,
-    "end": 120000
+    "title": "How to set up video chapters",
+    "startTime": 23000,
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi_webp/b1Fo_M_tj6w/hqdefault.webp",
+        "width": 336,
+        "height": 188
+      }
+    ],
+    "duration": 44000,
+    "endTime": 67000
+  },
+  {
+    "title": "See video chapters in action",
+    "startTime": 67000,
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi_webp/b1Fo_M_tj6w/hqdefault.webp",
+        "width": 336,
+        "height": 188
+      }
+    ],
+    "duration": 12000,
+    "endTime": 79000
   }
 ]
 ```
@@ -632,9 +902,49 @@ curl -X GET "http://your-server.com/v4/loadchapters?encodedTrack=QAAAjQIAJVJpY2s
   <ApiSection title="Example Request">
 
 ```bash
-curl -X GET "http://your-server.com/v4/trackstream?encodedTrack=YOUR_ENCODED_TRACK&itag=251" \
+curl -X GET "http://your-server.com/v4/trackstream?encodedTrack=QAAAAAMAM0hvdyB0byBBZGQgQ2hhcHRlcnMgdG8gWW91ciBWaWRlb3MgVXNpbmcgVGltZXN0YW1wcwAQWW91VHViZSBDcmVhdG9ycwAAAAAAATSYAAtiMUZvX01fdGo2dwABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWIxRm9fTV90ajZ3AQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2IxRm9fTV90ajZ3L3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA&itag=251" \
           -H "Authorization: yourPassword"
 ```
+  </ApiSection>
+  <ApiSection title="Response">
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+{
+  "url": "https://[CENSORED].googlevideo.com/videoplayback?expire=[CENSORED]&ei=[CENSORED]&ip=[CENSORED]&id=[CENSORED]&itag=251&source=youtube&requiressl=yes...",
+  "protocol": "http",
+  "format": "webm/opus",
+  "hlsUrl": null,
+  "formats": [
+    {
+      "itag": 137,
+      "mimeType": "video/mp4; codecs=\"avc1.640028\"",
+      "qualityLabel": "1080p",
+      "bitrate": 705901
+    },
+    {
+      "itag": 248,
+      "mimeType": "video/webm; codecs=\"vp9\"",
+      "qualityLabel": "1080p",
+      "bitrate": 1076128
+    },
+    {
+      "itag": 140,
+      "mimeType": "audio/mp4; codecs=\"mp4a.40.2\"",
+      "bitrate": 130778,
+      "audioQuality": "AUDIO_QUALITY_MEDIUM"
+    },
+    {
+      "itag": 251,
+      "mimeType": "audio/webm; codecs=\"opus\"",
+      "bitrate": 146128,
+      "audioQuality": "AUDIO_QUALITY_MEDIUM"
+    }
+  ]
+}
+```
+      </Accordion>
+    </Accordions>
   </ApiSection>
 </ApiCard>
 
