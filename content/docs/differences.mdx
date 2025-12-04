@@ -145,14 +145,43 @@ curl "http://your-server.com/v4/loadchapters?encodedTrack=QAAAjQI..." \
 ```json
 [
   {
-    "title": "Introduction",
-    "start": 0,
-    "end": 30000
+    "title": "An intro to video chapters",
+    "startTime": 0,
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi_webp/b1Fo_M_tj6w/hqdefault.webp",
+        "width": 336,
+        "height": 188
+      }
+    ],
+    "duration": 23000,
+    "endTime": 23000
   },
   {
-    "title": "Main Content",
-    "start": 30000,
-    "end": 120000
+    "title": "How to set up video chapters",
+    "startTime": 23000,
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi_webp/b1Fo_M_tj6w/hqdefault.webp",
+        "width": 336,
+        "height": 188
+      }
+    ],
+    "duration": 44000,
+    "endTime": 67000
+  },
+  {
+    "title": "See video chapters in action",
+    "startTime": 67000,
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi_webp/b1Fo_M_tj6w/hqdefault.webp",
+        "width": 336,
+        "height": 188
+      }
+    ],
+    "duration": 12000,
+    "endTime": 79000
   }
 ]
 ```
@@ -178,13 +207,13 @@ curl "http://your-server.com/v4/connection" \
   "status": "good",
   "metrics": {
     "speed": {
-      "bps": 22550021.50,
-      "kbps": 176172.04,
-      "mbps": 172.04
+      "bps": 23669887.133182842,
+      "kbps": 184920.99322799096,
+      "mbps": 180.59
     },
     "downloadedBytes": 10485760,
-    "durationSeconds": 0.47,
-    "timestamp": 1764787354485
+    "durationSeconds": 0.44,
+    "timestamp": 1764813556344
   }
 }
 ```
@@ -198,15 +227,32 @@ curl "http://your-server.com/v4/connection" \
   **NodeLink** has `/v4/trackstream` for all sources.
 </Callout>
 
-Stream audio directly as binary data or get a redirect to the source URL. Enable in config with `enableTrackStreamEndpoint: true`.
+Get direct streaming URLs and available formats for any track. Enable in config with `enableTrackStreamEndpoint: true`.
 
 <Tabs items={['NodeLink', 'Lavalink']}>
   <Tab value="NodeLink">
 ```bash
 # Works with ANY source (YouTube, Spotify, Deezer, etc.)
-curl "http://your-server.com/v4/trackstream?encodedTrack=QAAAjQI..." \
-     -H "Authorization: yourPassword" \
-     --output audio.mp3
+# Returns JSON with streaming URL and available formats
+curl "http://your-server.com/v4/trackstream?encodedTrack=QAAAjQI...&itag=251" \
+     -H "Authorization: yourPassword"
+```
+
+**Response:**
+```json
+{
+  "url": "https://[...].googlevideo.com/videoplayback?...",
+  "protocol": "http",
+  "format": "webm/opus",
+  "formats": [
+    {
+      "itag": 251,
+      "mimeType": "audio/webm; codecs=\"opus\"",
+      "bitrate": 146128,
+      "audioQuality": "AUDIO_QUALITY_MEDIUM"
+    }
+  ]
+}
 ```
   </Tab>
   <Tab value="Lavalink">
@@ -220,6 +266,7 @@ curl "http://your-server.com/youtube/stream/{videoId}" \
 </Tabs>
 
 **Use cases:**
+- Getting direct streaming URLs for custom players
 - Downloading audio for offline playback
 - Custom audio processing pipelines
 - Building audio preview features

@@ -221,7 +221,7 @@ curl -X GET "http://your-server.com/v4/loadlyrics?encodedTrack=QAAAjQIAJVJpY2sgQ
 
   <ApiSection title="Example Request">
 ```bash
-curl -X GET "http://your-server.com/v4/loadchapters?encodedTrack=QAAAjQIAJVJpY2sgQXN0bGV5..." \
+curl -X GET "http://your-server.com/v4/loadchapters?encodedTrack=QAAAAAMAM0hvdyB0byBBZGQgQ2hhcHRlcnMgdG8gWW91ciBWaWRlb3MgVXNpbmcgVGltZXN0YW1wcwAQWW91VHViZSBDcmVhdG9ycwAAAAAAATSYAAtiMUZvX01fdGo2dwABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWIxRm9fTV90ajZ3AQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2IxRm9fTV90ajZ3L3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA" \
      -H "Authorization: yourPassword"
 ```
   </ApiSection>
@@ -232,24 +232,43 @@ curl -X GET "http://your-server.com/v4/loadchapters?encodedTrack=QAAAjQIAJVJpY2s
 ```json
 [
   {
-    "title": "Introduction",
-    "start": 0,
-    "end": 30000
+    "title": "An intro to video chapters",
+    "startTime": 0,
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi_webp/b1Fo_M_tj6w/hqdefault.webp",
+        "width": 336,
+        "height": 188
+      }
+    ],
+    "duration": 23000,
+    "endTime": 23000
   },
   {
-    "title": "Verse 1",
-    "start": 30000,
-    "end": 75000
+    "title": "How to set up video chapters",
+    "startTime": 23000,
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi_webp/b1Fo_M_tj6w/hqdefault.webp",
+        "width": 336,
+        "height": 188
+      }
+    ],
+    "duration": 44000,
+    "endTime": 67000
   },
   {
-    "title": "Chorus",
-    "start": 75000,
-    "end": 120000
-  },
-  {
-    "title": "Outro",
-    "start": 120000,
-    "end": 213000
+    "title": "See video chapters in action",
+    "startTime": 67000,
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi_webp/b1Fo_M_tj6w/hqdefault.webp",
+        "width": 336,
+        "height": 188
+      }
+    ],
+    "duration": 12000,
+    "endTime": 79000
   }
 ]
 ```
@@ -289,9 +308,8 @@ NODELINK_ENABLETRACKSTREAMING=true
 
   <ApiSection title="Example Request">
 ```bash
-curl -X GET "http://your-server.com/v4/trackstream?encodedTrack=QAAAjQIAJVJpY2sgQXN0bGV5...&itag=251" \
-     -H "Authorization: yourPassword" \
-     --output audio.opus
+curl -X GET "http://your-server.com/v4/trackstream?encodedTrack=QAAAAAMAM0hvdyB0byBBZGQgQ2hhcHRlcnMgdG8gWW91ciBWaWRlb3MgVXNpbmcgVGltZXN0YW1wcwAQWW91VHViZSBDcmVhdG9ycwAAAAAAATSYAAtiMUZvX01fdGo2dwABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWIxRm9fTV90ajZ3AQA2aHR0cHM6Ly9pLnl0aW1nLmNvbS92aV93ZWJwL2IxRm9fTV90ajZ3L3NkZGVmYXVsdC53ZWJwAAAHeW91dHViZQAAAAAAAAAA&itag=251" \
+     -H "Authorization: yourPassword"
 ```
   </ApiSection>
 
@@ -310,7 +328,46 @@ Enable this feature carefully as it allows direct audio downloads. Consider rate
   </ApiSection>
 
   <ApiSection title="Response">
-Returns the audio stream directly with appropriate `Content-Type` header (e.g., `audio/opus`, `audio/webm`).
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+{
+  "url": "https://[CENSORED].googlevideo.com/videoplayback?expire=[CENSORED]&ei=[CENSORED]&ip=[CENSORED]&id=[CENSORED]&itag=251&source=youtube&requiressl=yes...",
+  "protocol": "http",
+  "format": "webm/opus",
+  "hlsUrl": null,
+  "formats": [
+    {
+      "itag": 137,
+      "mimeType": "video/mp4; codecs=\"avc1.640028\"",
+      "qualityLabel": "1080p",
+      "bitrate": 705901
+    },
+    {
+      "itag": 248,
+      "mimeType": "video/webm; codecs=\"vp9\"",
+      "qualityLabel": "1080p",
+      "bitrate": 1076128
+    },
+    {
+      "itag": 140,
+      "mimeType": "audio/mp4; codecs=\"mp4a.40.2\"",
+      "bitrate": 130778,
+      "audioQuality": "AUDIO_QUALITY_MEDIUM"
+    },
+    {
+      "itag": 251,
+      "mimeType": "audio/webm; codecs=\"opus\"",
+      "bitrate": 146128,
+      "audioQuality": "AUDIO_QUALITY_MEDIUM"
+    }
+  ]
+}
+```
+
+<p>The response includes: <strong>url</strong> (Direct streaming URL that expires after some time), <strong>protocol</strong> (Streaming protocol http/https), <strong>format</strong> (Audio format being streamed), <strong>hlsUrl</strong> (HLS playlist URL if available), and <strong>formats</strong> (All available quality/format options with their itags).</p>
+      </Accordion>
+    </Accordions>
   </ApiSection>
 </ApiCard>
 
