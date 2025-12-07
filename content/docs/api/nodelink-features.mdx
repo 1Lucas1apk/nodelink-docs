@@ -679,3 +679,124 @@ This provides more accurate timing for tracking actual playback start times and 
 </Callout>
   </ApiSection>
 </ApiCard>
+## YouTube Source Configuration
+
+<ApiCard name="Update Config" isNew method="PATCH" url="/v4/youtube/config" description="Updates the YouTube configuration (RefreshToken or VisitorData) in real-time.">
+  <ApiSection title="Body">
+    <ApiSchema name="refreshToken" type="string" description="New Refresh Token from Google OAuth." />
+    <ApiSchema name="visitorData" type="string" description="Visitor Data (poToken context)." />
+  </ApiSection>
+
+  <ApiSection title="Example Request">
+```bash
+curl -X PATCH "http://your-server.com/v4/youtube/config" \
+     -H "Authorization: yourPassword" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "refreshToken": "1//0gN...",
+       "visitorData": "Cgt..."
+     }'
+```
+  </ApiSection>
+
+  <ApiSection title="Response">
+    <Accordions>
+      <Accordion title="Success (200)">
+```json
+{
+  "message": "YouTube configuration updated successfully.",
+  "workersUpdated": 4,
+  "fieldsUpdated": ["refreshToken", "visitorData"]
+}
+```
+      </Accordion>
+      <Accordion title="Error (403)">
+```json
+{
+  "timestamp": 1733612345678,
+  "status": 403,
+  "error": "Forbidden",
+  "message": "Token validation failed...",
+  "path": "/v4/youtube/config"
+}
+```
+      </Accordion>
+    </Accordions>
+  </ApiSection>
+</ApiCard>
+
+<ApiCard name="Get Config" isNew method="GET" url="/v4/youtube/config" description="Checks the current configuration state and optionally validates the token.">
+  <ApiSection title="Query Parameters">
+    <ApiSchema name="validate" type="boolean" description="If true, performs a real-time validation check with Google." />
+  </ApiSection>
+
+  <ApiSection title="Response">
+    <Accordions>
+      <Accordion title="Standard Response">
+```json
+{
+  "refreshToken": "1//0h_Y...[hidden]",
+  "visitorData": "Cgt...[hidden]",
+  "isConfigured": true,
+  "isValid": null
+}
+```
+      </Accordion>
+      <Accordion title="With Validation">
+```json
+{
+  "refreshToken": "1//0h_Y...[hidden]",
+  "visitorData": null,
+  "isConfigured": true,
+  "isValid": true
+}
+```
+      </Accordion>
+    </Accordions>
+  </ApiSection>
+</ApiCard>
+
+<ApiCard name="OAuth" isNew method="POST / GET" url="/v4/youtube/oauth" description="Exchange a Refresh Token for an Access Token. Useful for debugging or external use.">
+  <ApiSection title="Methods Supported">
+    <ApiSchema name="refreshToken" type="string" required description="Required for POST via body, or GET via query parameter." />
+  </ApiSection>
+  
+  <ApiSection title="Body (POST)">
+    <ApiSchema name="refreshToken" type="string" required description="The refresh token to exchange." />
+  </ApiSection>
+
+  <ApiSection title="Query Parameters (GET)">
+    <ApiSchema name="refreshToken" type="string" required description="The refresh token to exchange." />
+  </ApiSection>
+
+  <ApiSection title="Example Request (POST)">
+```bash
+curl -X POST "http://your-server.com/v4/youtube/oauth" \
+     -H "Authorization: yourPassword" \
+     -H "Content-Type: application/json" \
+     -d '{"refreshToken": "..."}'
+```
+  </ApiSection>
+
+  <ApiSection title="Example Request (GET)">
+```bash
+curl -X GET "http://your-server.com/v4/youtube/oauth?refreshToken=..." \
+     -H "Authorization: yourPassword"
+```
+  </ApiSection>
+
+  <ApiSection title="Response">
+    <Accordions>
+      <Accordion title="Success (200)">
+```json
+{
+  "access_token": "ya29.a0...",
+  "expires_in": 3599,
+  "scope": "https://www.googleapis.com/auth/youtube",
+  "token_type": "Bearer"
+}
+```
+      </Accordion>
+    </Accordions>
+  </ApiSection>
+</ApiCard>

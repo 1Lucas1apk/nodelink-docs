@@ -4784,116 +4784,184 @@ The dashboard uses two template variables:
 
 ---
 
-## Available Metrics
+  <ApiSection title="Metric Categories">
+    <Accordions>
+      <Accordion title="Player & Audio">
 
-NodeLink exposes metrics through the `/v4/metrics` endpoint. All metrics follow the Prometheus format.
+**`nodelink_players`**  
+Total number of players.
 
-### NodeLink-Specific Metrics
+**`nodelink_playing_players`**  
+Number of currently playing players.
 
-#### Players & Playback
+**`nodelink_voice_connections`**  
+Number of active voice connections.
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `nodelink_players` | gauge | Total number of active players |
-| `nodelink_playing_players` | gauge | Number of players currently streaming audio |
-| `nodelink_uptime_ms` | gauge | Server uptime in milliseconds |
-| `nodelink_playback_events_total` | counter | Total playback events fired |
+**`nodelink_voice_connection_errors_total`**  
+Total number of voice connection errors.
 
-#### Audio Frame Statistics
+**`nodelink_frames_sent`**  
+Total number of audio frames sent.
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `nodelink_frames_sent` | gauge | Total audio frames successfully sent to Discord |
-| `nodelink_frames_nulled` | gauge | Frames that were dropped or nulled (indicates potential audio issues) |
-| `nodelink_frames_deficit` | gauge | Difference between expected and actual frames (positive = lag) |
-| `nodelink_frames_expected` | gauge | Total number of frames that should have been sent |
+**`nodelink_frames_nulled`**  
+Total number of nulled audio frames.
 
-High `frames_nulled` or positive `frames_deficit` indicates audio quality problems.
+**`nodelink_frames_deficit`**  
+Audio frame deficit.
 
-#### API & Source Tracking
+**`nodelink_frames_expected`**  
+Total number of expected audio frames.
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `nodelink_api_requests_total` | counter | Total API requests (labeled by endpoint) |
-| `nodelink_api_errors_total` | counter | API errors counter |
-| `nodelink_source_requests_total` | counter | Requests to audio sources (YouTube, Spotify, etc.) |
+**`nodelink_track_loads_total`**  
+Total number of track loads.
 
-Example endpoints tracked: `/v4/loadtracks`, `/v4/stats`, `/v4/info`, `/v4/loadlyrics`
+**`nodelink_track_load_duration_ms`**  
+Track load duration in milliseconds.
 
-#### System Resources
+**`nodelink_stream_errors_total`**  
+Total number of stream errors.
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `nodelink_memory_free_bytes` | gauge | Free system memory |
-| `nodelink_memory_used_bytes` | gauge | Memory used by NodeLink process |
-| `nodelink_memory_allocated_bytes` | gauge | Total allocated memory |
-| `nodelink_memory_reservable_bytes` | gauge | Available reservable memory |
-| `nodelink_cpu_cores` | gauge | Number of CPU cores available |
-| `nodelink_cpu_system_load` | gauge | System-wide CPU load average |
-| `nodelink_cpu_nodelink_load` | gauge | NodeLink process CPU usage (0-1 scale) |
+**`nodelink_player_stuck_total`**  
+Total number of stuck players.
 
-### Node.js Runtime Metrics
+**`nodelink_player_restorations_total`**  
+Total number of player restorations.
 
-These are automatically collected by `prom-client` and provide deep insights into the Node.js process.
+**`nodelink_player_destructions_total`**  
+Total number of player destructions.
 
-#### Event Loop
+**`nodelink_filter_usage_total`**  
+Total number of filter usage.
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `nodejs_eventloop_lag_seconds` | gauge | Event loop lag |
-| `nodejs_eventloop_lag_min_seconds` | gauge | Minimum recorded lag |
-| `nodejs_eventloop_lag_max_seconds` | gauge | Maximum recorded lag |
-| `nodejs_eventloop_lag_mean_seconds` | gauge | Mean lag |
-| `nodejs_eventloop_lag_stddev_seconds` | gauge | Standard deviation |
-| `nodejs_eventloop_lag_p50_seconds` | gauge | 50th percentile (median) |
-| `nodejs_eventloop_lag_p90_seconds` | gauge | 90th percentile |
-| `nodejs_eventloop_lag_p99_seconds` | gauge | 99th percentile |
+      </Accordion>
+      <Accordion title="System & Worker">
 
-High lag values indicate the event loop is blocked, which can cause audio stuttering.
+**`nodelink_uptime_ms`**  
+Server uptime in milliseconds.
 
-#### Memory & Heap
+**`nodelink_cpu_cores`**  
+Number of CPU cores.
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `nodejs_heap_size_total_bytes` | gauge | Total heap size |
-| `nodejs_heap_size_used_bytes` | gauge | Used heap size |
-| `nodejs_external_memory_bytes` | gauge | External memory (C++ buffers, audio data) |
-| `nodejs_heap_space_size_total_bytes` | gauge | Heap space size by type (new, old, code, large_object, etc.) |
-| `nodejs_heap_space_size_used_bytes` | gauge | Used heap space by type |
-| `nodejs_heap_space_size_available_bytes` | gauge | Available heap space by type |
+**`nodelink_cpu_system_load`**  
+System CPU load average.
 
-Heap spaces include: `new`, `old`, `code`, `large_object`, `trusted`, and more.
+**`nodelink_cpu_nodelink_load`**  
+NodeLink CPU load.
 
-#### Garbage Collection
+**`nodelink_memory_free_bytes`**  
+Free system memory in bytes.
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `nodejs_gc_duration_seconds` | histogram | GC pause durations by kind (minor, major, incremental, weakcb) |
+**`nodelink_memory_used_bytes`**  
+Used memory in bytes.
 
-Frequent or long GC pauses can impact audio streaming performance.
+**`nodelink_memory_allocated_bytes`**  
+Allocated memory in bytes.
 
-#### Active Resources
+**`nodelink_memory_reservable_bytes`**  
+Reservable memory in bytes.
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `nodejs_active_handles` | gauge | Active libuv handles by type (Server, Socket, Pipe, etc.) |
-| `nodejs_active_handles_total` | gauge | Total active handles |
-| `nodejs_active_requests` | gauge | Active libuv requests |
-| `nodejs_active_requests_total` | gauge | Total active requests |
-| `nodejs_active_resources` | gauge | Active resources by type (Timeout, TCPWrap, etc.) |
-| `nodejs_active_resources_total` | gauge | Total active resources |
+**`nodelink_total_workers`**  
+Total number of active workers.
 
-#### Process Info
+**`nodelink_worker_players`**  
+Number of players per worker.
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `nodejs_version_info` | gauge | Node.js version information |
-| `process_resident_memory_bytes` | gauge | Resident Set Size (physical RAM used) |
-| `process_virtual_memory_bytes` | gauge | Virtual memory size |
-| `process_open_fds` | gauge | Number of open file descriptors |
-| `process_max_fds` | gauge | Maximum file descriptors allowed |
+**`nodelink_worker_playing_players`**  
+Number of playing players per worker.
 
----
+**`nodelink_worker_memory_used_bytes`**  
+Worker memory used in bytes.
+
+**`nodelink_worker_memory_allocated_bytes`**  
+Worker memory allocated in bytes.
+
+**`nodelink_worker_cpu_load`**  
+Worker CPU load.
+
+**`nodelink_worker_command_queue_length`**  
+Worker command queue length.
+
+**`nodelink_worker_frames_sent`**  
+Audio frames sent by worker.
+
+**`nodelink_worker_frames_nulled`**  
+Audio frames nulled by worker.
+
+**`nodelink_worker_frames_deficit`**  
+Audio frame deficit by worker.
+
+**`nodelink_worker_frames_expected`**  
+Audio frames expected by worker.
+
+**`nodelink_worker_uptime_seconds`**  
+Worker uptime in seconds.
+
+**`nodelink_worker_health`**  
+Worker health status (1 = healthy, 0 = unhealthy).
+
+**`nodelink_worker_restarts_total`**  
+Total number of worker restarts.
+
+**`nodelink_worker_failures_total`**  
+Total number of worker failures.
+
+**`process_*` / `nodejs_*`**  
+Standard Node.js and process metrics (CPU, memory, event loop, GC, handles).
+
+      </Accordion>
+      <Accordion title="API & Network">
+
+**`nodelink_api_requests_total`**  
+Total number of API requests.
+
+**`nodelink_api_errors_total`**  
+Total number of API errors.
+
+**`nodelink_source_requests_total`**  
+Total number of source requests.
+
+**`nodelink_websocket_connections`**  
+Number of active WebSocket connections.
+
+**`nodelink_websocket_messages_total`**  
+Total number of WebSocket messages.
+
+**`nodelink_session_resumes_total`**  
+Total number of session resumes.
+
+**`nodelink_command_queue_size`**  
+Total size of command queue across all workers.
+
+**`nodelink_command_execution_time_ms`**  
+Command execution time in milliseconds.
+
+**`nodelink_command_timeouts_total`**  
+Total number of command timeouts.
+
+**`nodelink_command_retries_total`**  
+Total number of command retries.
+
+**`nodelink_route_planner_ips`**  
+Number of available IPs in route planner.
+
+**`nodelink_route_planner_banned_ips`**  
+Number of banned IPs in route planner.
+
+**`nodelink_lyrics_requests_total`**  
+Total number of lyrics requests.
+
+**`nodelink_rate_limit_hits_total`**  
+Total number of rate limit hits.
+
+**`nodelink_dos_protection_blocks_total`**  
+Total number of DoS protection blocks.
+
+**`nodelink_http_request_duration_ms`**  
+HTTP request duration in milliseconds.
+
+      </Accordion>
+    </Accordions>
+  </ApiSection>
 
 ## Example Queries
 
