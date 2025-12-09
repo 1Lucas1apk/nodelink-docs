@@ -40,6 +40,9 @@ NodeLink isn't just a clone. We took what worked and added features that made se
   <Card title="🎵 Direct Streaming" href="#direct-streaming">
     Stream audio directly without going through Discord. For when you need that flexibility.
   </Card>
+  <Card title="🎛️ Audio Mixer" href="/docs/api/nodelink-features#audio-mixer">
+    Overlay TTS, sound effects, or voiceovers on top of your music. Built-in mixing engine.
+  </Card>
   <Card title="🔊 Text-to-Speech" href="#tts">
     Google TTS built-in. No plugins needed.
   </Card>
@@ -581,23 +584,13 @@ Some sources need tokens. Here's the reality:
     **These require free tokens (no payment):**
 
     **Spotify** (`clientId` + `clientSecret`):
-    - Visit [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-    - Create an app (free)
-    - Copy Client ID and Secret
-    - Add to config
+    - Requires a Client ID and Secret from the Spotify Developer Dashboard.
 
     **Deezer** (`arl`):
-    - Login to Deezer in browser
-    - Open DevTools → Application → Cookies
-    - Copy `arl` cookie value
-    - Add to config
+    - Requires a valid `arl` cookie from a web session.
 
     **Tidal** (`token`):
-    - Login to Tidal web player
-    - Open DevTools → Network tab
-    - Look for API requests with Authorization header
-    - Copy token value
-    - Add to config
+    - Requires a valid authentication token.
 
     <Callout type="info">
       All these services have **free tiers**. You don't need premium accounts.
@@ -621,7 +614,7 @@ Some sources need tokens. Here's the reality:
     **How?** NodeLink reverse-engineered Apple's web player authentication and can generate valid tokens on-demand.
 
     <Callout type="success" title="This is why NodeLink exists">
-      We looked at requiring a $99/year membership and said "nope, there's a better way."
+      We automate what others require you to do manually or pay for.
     </Callout>
   </Tab>
   <Tab value="No Token Needed">
@@ -738,9 +731,9 @@ Still unsure? Let's make it personal.
   <Accordion title="I don't want to pay $99/year for Apple Music 💰">
     **→ NodeLink**
 
-    You want Apple Music support but don't want to pay $99/year for Apple Developer Program membership just to get API tokens.
+    You want Apple Music support but don't want to pay $99/year for Apple Developer Program membership or manually extract tokens every time they expire.
 
-    NodeLink auto-generates Apple Music tokens. LavaSrc plugin for Lavalink requires the paid membership.
+    NodeLink auto-generates Apple Music tokens. While Lavalink can use manually extracted tokens, NodeLink handles the generation and renewal automatically.
   </Accordion>
 
   <Accordion title="I want to be part of building something 🌱">

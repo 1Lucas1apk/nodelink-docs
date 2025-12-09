@@ -11,6 +11,54 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 Features unique to NodeLink that extend beyond standard Lavalink compatibility.
 
+## Audio Mixer
+
+<ApiCard name="Audio Mixer" isNew method="FEATURE" url="mixer" description="Overlay auxiliary audio tracks (TTS, SFX) on top of the main playback.">
+  <ApiSection title="Overview">
+    The Audio Mixer allows you to play secondary audio tracks simultaneously with the main track. This is perfect for:
+    - **Voiceovers & TTS**: Announce song names or read chat messages without stopping the music.
+    - **Sound Effects**: Play airhorns, applause, or memes over the active track.
+    - **Background Music**: Keep a low-volume ambient track running while playing other media.
+
+    The mixer works by intercepting the main audio stream and digitally mixing the PCM data from auxiliary sources before encoding. It features intelligent buffering to handle sources that download faster than real-time (like TTS) and automatic clamping to prevent audio distortion.
+  </ApiSection>
+
+  <ApiSection title="WebSocket Events">
+    <Accordions>
+      <Accordion title="MixStartedEvent">
+        Emitted when a layer is successfully added and begins buffering.
+```json
+{
+    "op": "event",
+    "type": "MixStartedEvent",
+    "guildId": "990369410344701964",
+    "mixId": "835e8475f0a53815",
+    "track": { ... },
+    "volume": 0.9
+}
+```
+      </Accordion>
+      <Accordion title="MixEndedEvent">
+        Emitted when a layer is removed (finished, error, or manual stop).
+```json
+{
+    "op": "event",
+    "type": "MixEndedEvent",
+    "guildId": "990369410344701964",
+    "mixId": "835e8475f0a53815",
+    "reason": "FINISHED"
+}
+```
+        **Possible Reasons:**
+        - `FINISHED`: Playback completed naturally.
+        - `REMOVED`: Manually removed via API.
+        - `ERROR`: Stream error occurred.
+        - `MAIN_ENDED`: The main track ended, triggering auto-cleanup.
+      </Accordion>
+    </Accordions>
+  </ApiSection>
+</ApiCard>
+
 ## Enhanced Track Metadata
 
 <ApiCard name="Holo Tracks" method="CONFIG" url="enableHoloTracks" description="Automatically enriches tracks with comprehensive metadata when they start playing.">

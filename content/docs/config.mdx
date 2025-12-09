@@ -271,7 +271,7 @@ Configuration for specific music and media providers.
   type={{
     enabled: { type: 'boolean', default: 'true' },
     token: { 
-      description: 'Auth token (get from web player devtools).',
+      description: 'Valid authentication token.',
       type: 'string', 
       default: '""' 
     },
@@ -387,3 +387,35 @@ Configuration for lyrics providers.
     }
   }}
 />
+
+---
+
+## Mixer
+
+Configuration for the audio mixer feature.
+
+<TypeTable
+  type={{
+    'mix.enabled': {
+      description: 'Enables the audio mixer feature.',
+      type: 'boolean',
+      default: 'true'
+    },
+    'mix.defaultVolume': {
+      description: 'Default volume for mixed tracks (0.0 to 1.0).',
+      type: 'number',
+      default: '0.8'
+    },
+    'mix.maxLayersMix': {
+      description: 'Maximum number of simultaneous mix layers per player.',
+      type: 'number',
+      default: '5'
+    },
+    'mix.autoCleanup': {
+      description: 'Automatically remove layers when they finish playing.',
+      type: 'boolean',
+      default: 'true'
+    }
+  }}
+/>
+

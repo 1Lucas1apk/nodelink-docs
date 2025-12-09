@@ -985,6 +985,120 @@ curl -X POST "http://your-server.com/v4/routeplanner/free/all" \
 </ApiCard>
 
 
+## Audio Mixer
+
+The Audio Mixer allows overlaying auxiliary audio tracks (like TTS, sound effects, or background music) on top of the main active track.
+
+<ApiCard name="Add Mix Layer" isNew method="POST" url="/v4/sessions/{sessionId}/players/{guildId}/mix" description="Adds a new audio track to be mixed over the current playback.">
+  <ApiSection title="Body">
+    <ApiSchema name="track.encoded" type="string" description="Base64 encoded track string (optional if identifier provided)" />
+    <ApiSchema name="track.identifier" type="string" description="Identifier to resolve (optional if encoded provided)" />
+    <ApiSchema name="track.userData" type="object" description="Optional user data" />
+    <ApiSchema name="volume" type="number" description="Float 0.0 to 1.0 (Default: 0.8)" />
+  </ApiSection>
+
+  <ApiSection title="Example Request">
+```bash
+curl -X POST "http://your-server.com/v4/sessions/yourSessionId/players/yourGuildId/mix" \
+     -H "Authorization: yourPassword" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "track": {
+         "encoded": "QAAAAAIAEFRUUzogaGVsbG8gd29ybGQ..."
+       },
+       "volume": 0.9
+     }'
+```
+  </ApiSection>
+
+  <ApiSection title="Response (201 Created)">
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+{
+    "id": "835e8475f0a53815",
+    "track": {
+        "encoded": "...",
+        "info": { ... },
+        "userData": {}
+    },
+    "volume": 0.9
+}
+```
+      </Accordion>
+    </Accordions>
+  </ApiSection>
+</ApiCard>
+
+<ApiCard name="Get Active Mixes" isNew method="GET" url="/v4/sessions/{sessionId}/players/{guildId}/mix" description="Retrieves a list of currently active mix layers.">
+  <ApiSection title="Example Request">
+```bash
+curl -X GET "http://your-server.com/v4/sessions/yourSessionId/players/yourGuildId/mix" \
+     -H "Authorization: yourPassword"
+```
+  </ApiSection>
+
+  <ApiSection title="Response">
+    <Accordions>
+      <Accordion title="Example Response">
+```json
+{
+    "mixes": [
+        {
+            "id": "835e8475f0a53815",
+            "track": { ... },
+            "volume": 0.9,
+            "position": 1280,
+            "startTime": 1700000000000
+        }
+    ]
+}
+```
+      </Accordion>
+    </Accordions>
+  </ApiSection>
+</ApiCard>
+
+<ApiCard name="Update Mix Volume" isNew method="PATCH" url="/v4/sessions/{sessionId}/players/{guildId}/mix/{mixId}" description="Updates the volume of a specific mix layer.">
+  <ApiSection title="Body">
+    <ApiSchema name="volume" type="number" required description="Float 0.0 to 1.0" />
+  </ApiSection>
+
+  <ApiSection title="Example Request">
+```bash
+curl -X PATCH "http://your-server.com/v4/sessions/yourSessionId/players/yourGuildId/mix/835e8475f0a53815" \
+     -H "Authorization: yourPassword" \
+     -H "Content-Type: application/json" \
+     -d '{"volume": 0.5}'
+```
+  </ApiSection>
+
+  <ApiSection title="Response">
+    <Accordions>
+      <Accordion title="Success">
+        `204 No Content`
+      </Accordion>
+    </Accordions>
+  </ApiSection>
+</ApiCard>
+
+<ApiCard name="Remove Mix Layer" isNew method="DELETE" url="/v4/sessions/{sessionId}/players/{guildId}/mix/{mixId}" description="Manually stops and removes a mix layer.">
+  <ApiSection title="Example Request">
+```bash
+curl -X DELETE "http://your-server.com/v4/sessions/yourSessionId/players/yourGuildId/mix/835e8475f0a53815" \
+     -H "Authorization: yourPassword"
+```
+  </ApiSection>
+
+  <ApiSection title="Response">
+    <Accordions>
+      <Accordion title="Success">
+        `204 No Content`
+      </Accordion>
+    </Accordions>
+  </ApiSection>
+</ApiCard>
+
 ## Audio Filters
 
 NodeLink supports a variety of audio filters that can be applied in real-time to modify playback. Filters are applied through the `filters` object in the Update Player request.
