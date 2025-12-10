@@ -239,9 +239,27 @@ NODELINK_CLUSTER_ENABLED: "true"
 NODELINK_CLUSTER_WORKERS: "0"           # 0 = use all CPU cores
 NODELINK_CLUSTER_MINWORKERS: "1"
 NODELINK_CLUSTER_MAXPLAYERSPERWORKER: "20"
+NODELINK_CLUSTER_SCALING_TARGETUTILIZATION: "0.7"
+NODELINK_CLUSTER_SCALING_SCALEUPTHRESHOLD: "0.75"
+NODELINK_CLUSTER_SCALING_SCALEDOWNTHRESHOLD: "0.3"
 ```
 
 Why cluster mode? Better CPU utilization across cores. Auto-scaling where workers spawn and die based on player load. Reliability where one worker crashing doesn't take down the whole server. Set `WORKERS` to `0` and NodeLink automatically uses all your cores. Or specify a number like `4` for exactly 4 workers.
+
+</Accordion>
+
+<Accordion title="Audio Mixer">
+
+Control the built-in audio mixing engine:
+
+```yaml
+NODELINK_MIX_ENABLED: "true"
+NODELINK_MIX_DEFAULTVOLUME: "0.8"
+NODELINK_MIX_MAXLAYERSMIX: "5"
+NODELINK_MIX_AUTOCLEANUP: "true"
+```
+
+The mixer allows you to overlay tracks (like TTS or SFX) on top of the main audio. You can limit the number of simultaneous layers to manage resources.
 
 </Accordion>
 

@@ -1,0 +1,122 @@
+---
+title: HELLOOOOOOOOOOO WORLDDDDDDD - Audio Mixer
+description: The feature you didn't know you needed, until now. Radio style overlays are finally here.
+date: 2024-12-09
+authors: [PerformanC]
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+
+# HELLOOOOOOOOOOO WORLDDDDDDD 📢
+
+Okay, we need to talk.
+
+You know that awkward moment in your Discord music bot? The one where you want to announce "Now Playing: Rick Astley" using TTS?
+
+So you pause the music. **Silence.**
+The TTS starts speaking: "Now... Playing..."
+The users get confused. "Did the bot crash?"
+Then the music resumes.
+
+ It breaks the flow. It kills the vibe. It's just... 2018.
+
+**We fixed it.**
+
+<Callout type="success" title="Meet the Audio Mixer">
+  We built a real-time PCM mixing engine directly into NodeLink. Now you can play auxiliary audio tracks—like TTS, sound effects, or voiceovers—**on top** of the active music track. No pausing. No stopping. Just pure, radio-style mixing.
+</Callout>
+
+## How It Actually Works
+
+We didn't just hack this together. We went deep into the audio pipeline.
+
+The mixing logic sits right before the Opus encoder. It operates on raw 16-bit signed integer PCM data. When you send a mix request, we don't just "play" it; we intercept the main audio stream, calculate the waveform of your new track, and digitally fuse them together.
+
+We even implemented a **Flowing Buffer Strategy**. Unlike standard streams that might stutter if the network hiccups, the mixer aggressively buffers the incoming auxiliary content (like a TTS file) into memory layers. This means if your TTS downloads faster than real-time, we hold it safe and feed it into the mixer perfectly synced with the music.
+
+And because adding two audio signals can sometimes get loud, we added automatic **Clamping**. We mathematically cap the values to prevent that nasty digital distortion (clipping) that destroys listeners' ears.
+
+## Not Just For Talking 🐈
+
+And look, while we keep talking about TTS announcements, that's just scratching the surface. This is a full audio mixer.
+
+You want to overlay a **cat meowing** right before the bass drop? You can do that.
+You want to spam the **Vine Boom** sound effect while your friend is talking? Easy.
+Rain sounds over a jazz track? Done.
+
+It handles any audio source we support. If you can play it, you can mix it.
+
+## The One Rule (Technical Detail)
+
+There is one specific catch you need to know: **Physics still apply.**
+
+<Callout type="warn" title="Requires Active Playback">
+  The Mixer works by piggybacking on the active audio stream. It reuses the stream's clock and data pipeline to inject the extra layer.
+  
+  **This means something must be playing.**
+  
+  If your player is idle or stopped, the Mixer has nothing to "mix" into. If you want to play a sound effect on an empty player, you don't need the Mixer—just use the standard Play command! The Mixer is specifically for *overlays*.
+</Callout>
+
+## Let's Make It Speak
+
+Enough theory. You want to see it work. You want to scream "HELLO WORLD" at your users while *lo-fi hip hop beats to study/relax to* plays in the background.
+
+<Steps>
+<Step>
+
+### The Setup
+
+You don't need to configure anything special. It's enabled by default. You just need a session ID, a player, and a dream.
+
+</Step>
+
+<Step>
+
+### The Payload
+
+You need a track. You can pass a standard identifier (like `gtts:Hello World`) or an encoded track string if you're fancy. We also need a volume level because you probably don't want the TTS to be quieter than the music.
+
+Here is the exact JSON you need to send. This is a real Google TTS track encoded for you:
+
+```json
+{
+    "track": {
+        "encoded": "QAAAAAIAEFRUUzogaGVsbG8gd29ybGQACkdvb2dsZSBUVFP//////////wAQZ3R0czpoZWxsbyB3b3JsZAEBAHBodHRwczovL3RyYW5zbGF0ZS5nb29nbGUuY29tL3RyYW5zbGF0ZV90dHM/aWU9VVRGLTgmcT1oZWxsbyUyMHdvcmxkJnRsPWVuLVVTJnRvdGFsPTEmaWR4PTAmdGV4dGxlbj0xMSZjbGllbnQ9Z3R4AApnb29nbGUtdHRzAAAAAAAAAAA="
+    },
+    "volume": 0.9
+}
+```
+
+</Step>
+
+<Step>
+
+### The Request
+
+Fire this off while music is playing. Don't worry, the music won't stop.
+
+```http
+POST /v4/sessions/{sessionId}/players/{guildId}/mix
+Content-Type: application/json
+
+<Payload from above>
+```
+
+Boom. "Hello World" plays. The music keeps grooving. You look like a wizard.
+
+</Step>
+</Steps>
+
+## Lifecycle Management
+
+We know what you're worried about: "What if the TTS hangs? What if it stays in memory forever?"
+
+We thought of that. The mixer has an auto-cleanup heuristic. If a layer finishes playing (based on our "Empty Read" logic where we track buffer depletion), we automatically destroy it. If the main track ends, we clean up the mixer. If you want to stop it manually, you can DELETE the specific mix ID.
+
+It's self-managing. You fire the request, we handle the audio engineering.
+
+Go build something noisy. 🎧

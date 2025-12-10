@@ -21,6 +21,20 @@ export const docs = defineDocs({
   },
 });
 
+export const blog = defineDocs({
+  dir: 'content/blog',
+  docs: {
+    schema: frontmatterSchema,
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+    async: false
+  },
+  meta: {
+    schema: metaSchema,
+  },
+});
+
 export default defineConfig({
   mdxOptions: {
     rehypeCodeOptions: {

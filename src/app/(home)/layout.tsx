@@ -7,7 +7,7 @@ import {
   NavbarMenuLink,
   NavbarMenuTrigger,
 } from 'fumadocs-ui/layouts/home/navbar';
-import { BugIcon, Globe, Server, ServerCogIcon, SettingsIcon } from 'lucide-react';
+import { BugIcon, Globe, SettingsIcon, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Layout({ children }: LayoutProps<'/'>) {
@@ -35,6 +35,13 @@ export default function Layout({ children }: LayoutProps<'/'>) {
                   icon: <BugIcon />
                 }
               ]
+            },
+            {
+              type: 'main',
+              text: 'Updates',
+              url: '/blog',
+              on: 'menu',
+              icon: <Sparkles />,
             },
             {
               type: 'custom',
@@ -82,9 +89,16 @@ export default function Layout({ children }: LayoutProps<'/'>) {
                           Configuration settings for the server instance.
                         </p>
                     </NavbarMenuLink>
+                    <NavbarMenuLink href="/blog" className="lg:col-start-3 lg:row-start-1">
+                        <Sparkles className="bg-fd-primary text-fd-primary-foreground p-1 mb-2 rounded-md" />
+                        <p className="font-medium">Updates</p>
+                        <p className="text-fd-muted-foreground text-sm">
+                          Latest news and releases for NodeLink.
+                        </p>
+                    </NavbarMenuLink>
                     <NavbarMenuLink
                       href="/docs/troubleshooting"
-                      className="lg:col-start-3 lg:row-start-1"
+                      className="lg:col-start-3 lg:row-start-2"
                       style={{
                         background: 'radial-gradient(ellipse at center, #3d2914 0%, #2a1810 30%, #1a0f0a 60%, #0d0806 100%)'
                       }}
@@ -101,6 +115,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
               ),
             },
             // other items
+
           ]}
   >
     {children}

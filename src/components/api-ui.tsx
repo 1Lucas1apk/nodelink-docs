@@ -25,11 +25,12 @@ export function ApiSection({ children, title }: { children: ReactNode, title: st
     )
 }
 
-export function ApiCard({ children, className, name, method, url, description, example }: { children: ReactNode, className?: string, name: string, method?: string, url?: string, description?: ReactNode, example?: ReactNode }) {
+export function ApiCard({ children, className, name, method, url, description, example, isNew }: { children: ReactNode, className?: string, name: string, method?: string, url?: string, description?: ReactNode, example?: ReactNode, isNew?: boolean }) {
     const id = name.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
     return (
         <div className={cn(
             "group relative rounded-xl border border-fd-border/50 bg-fd-card/30 backdrop-blur-xl overflow-hidden transition-all duration-300 hover:border-fd-accent/50 hover:shadow-sm hover:shadow-fd-accent/5 my-8",
+            isNew && "border-amber-500/40 shadow-[0_0_20px_-5px_rgba(245,158,11,0.15)] dark:border-amber-500/30",
             className
         )}>
             <div className="absolute inset-0 -z-10 bg-linear-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100 dark:from-white/5 dark:to-transparent pointer-events-none" />
@@ -43,30 +44,48 @@ export function ApiCard({ children, className, name, method, url, description, e
                             </a>
                         </h3>
                         {url && <div className="hidden md:flex font-mono text-xs text-fd-primary bg-fd-primary/10 px-2.5 py-1 rounded-md border border-fd-primary/20 select-all whitespace-nowrap leading-none items-center min-h-[24px]">{url}</div>}
+                        {/* Mobile Method and Sparkle */}
+                        <div className="flex items-center gap-1">
+                            {method && (
+                                <span className={cn(
+                                    "md:hidden px-2.5 py-1 rounded-md text-xs font-bold border shadow-sm tracking-wider uppercase whitespace-nowrap shrink-0 select-none flex items-center min-h-[24px] leading-none",
+                                    method === "GET" && "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+                                    method === "POST" && "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+                                    method === "DELETE" && "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+                                    method === "PATCH" && "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+                                    method === "WS" && "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+                                    method === "EVENT" && "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
+                                    method.includes("/") && "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
+                                )}>{method}</span>
+                            )}
+                            {isNew && (
+                                <span className="md:hidden text-base text-amber-600 dark:text-amber-400 leading-none">
+                                    ✨
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {/* Desktop Method and Sparkle */}
+                    <div className="flex items-center gap-1">
                         {method && (
                             <span className={cn(
-                                "md:hidden px-2.5 py-1 rounded-md text-xs font-bold border shadow-sm tracking-wider uppercase whitespace-nowrap shrink-0 select-none flex items-center min-h-[24px] leading-none",
+                                "hidden md:flex px-2.5 py-1 rounded-md text-xs font-bold border shadow-sm tracking-wider uppercase whitespace-nowrap shrink-0 select-none items-center min-h-[24px] leading-none",
                                 method === "GET" && "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
                                 method === "POST" && "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
                                 method === "DELETE" && "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
                                 method === "PATCH" && "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
                                 method === "WS" && "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
                                 method === "EVENT" && "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
+                                method.includes("/") && "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
                             )}>{method}</span>
                         )}
+                        {isNew && (
+                            <span className="hidden md:inline-flex text-base text-amber-600 dark:text-amber-400 leading-none">
+                                ✨
+                            </span>
+                        )}
                     </div>
-                    
-                    {method && (
-                        <span className={cn(
-                            "hidden md:flex px-2.5 py-1 rounded-md text-xs font-bold border shadow-sm tracking-wider uppercase whitespace-nowrap shrink-0 select-none items-center min-h-[24px] leading-none",
-                            method === "GET" && "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-                            method === "POST" && "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-                            method === "DELETE" && "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
-                            method === "PATCH" && "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
-                            method === "WS" && "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
-                            method === "EVENT" && "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
-                        )}>{method}</span>
-                    )}
                     
                     {url && <div className="md:hidden font-mono text-xs text-fd-primary bg-fd-primary/10 px-2.5 py-1 rounded-md border border-fd-primary/20 select-all break-all leading-none flex items-center min-h-[24px] w-fit max-w-full">{url}</div>}
                 </div>

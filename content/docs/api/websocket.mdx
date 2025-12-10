@@ -498,3 +498,59 @@ NodeLink sends various events to keep clients informed about playback status, pl
 ```
   </ApiSection>
 </ApiCard>
+
+### Audio Mixer Events
+
+<ApiCard name="MixStartedEvent" method="EVENT" description="Emitted when a new mix layer is successfully added and begins buffering.">
+  <ApiSection title="Payload Structure">
+    <ApiSchema name="op" type="string" description='Always "event"' />
+    <ApiSchema name="type" type="string" description='Always "MixStartedEvent"' />
+    <ApiSchema name="guildId" type="string" description="Discord guild ID where the mix started" />
+    <ApiSchema name="mixId" type="string" description="Unique identifier for the mix layer" />
+    <ApiSchema name="track" type="object" description="Full track information of the mixed layer" />
+    <ApiSchema name="volume" type="number" description="Volume of the mixed layer (0.0 to 1.0)" />
+  </ApiSection>
+  <ApiSection title="Example">
+```json
+{
+    "op": "event",
+    "type": "MixStartedEvent",
+    "guildId": "990369410344701964",
+    "mixId": "835e8475f0a53815",
+    "track": {
+        "encoded": "QAAAAAIAEFRUUzogaGVsbG8gd29ybGQACkdvb2dsZSBUVFP//////////wAQZ3R0czpoZWxsbyB3b3JsZAEBAHBodHRwczovL3RyYW5zbGF0ZS5nb29nbGUuY29tL3RyYW5zbGF0ZV90dHM/aWU9VVRGLTgmcT1oZWxsbyUyMHdvcmxkJnRsPWVuLVVTJnRvdGFsPTEmaWR4PTAmdGV4dGxlbj0xMSZjbGllbnQ9Z3R4AApnb29nbGUtdHRzAAAAAAAAAAA=",
+        "info": { ... },
+        "userData": {}
+    },
+    "volume": 0.9
+}
+```
+  </ApiSection>
+</ApiCard>
+
+<ApiCard name="MixEndedEvent" method="EVENT" description="Emitted when a mix layer is removed (finished, error, or manual stop).">
+  <ApiSection title="Payload Structure">
+    <ApiSchema name="op" type="string" description='Always "event"' />
+    <ApiSchema name="type" type="string" description='Always "MixEndedEvent"' />
+    <ApiSchema name="guildId" type="string" description="Discord guild ID where the mix ended" />
+    <ApiSchema name="mixId" type="string" description="Unique identifier for the mix layer" />
+    <ApiSchema name="reason" type="string" description="Reason the mix layer ended (FINISHED, REMOVED, ERROR, MAIN_ENDED)" />
+  </ApiSection>
+  <ApiSection title="Possible Reasons">
+    <ApiSchema name="FINISHED" type="string" description="Playback completed naturally (empty buffer threshold reached)." />
+    <ApiSchema name="REMOVED" type="string" description="Manually removed via API." />
+    <ApiSchema name="ERROR" type="string" description="Stream error occurred." />
+    <ApiSchema name="MAIN_ENDED" type="string" description="The main track ended, triggering auto-cleanup." />
+  </ApiSection>
+  <ApiSection title="Example">
+```json
+{
+    "op": "event",
+    "type": "MixEndedEvent",
+    "guildId": "990369410344701964",
+    "mixId": "835e8475f0a53815",
+    "reason": "FINISHED"
+}
+```
+  </ApiSection>
+</ApiCard>
