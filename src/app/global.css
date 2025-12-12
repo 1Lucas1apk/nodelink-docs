@@ -6,11 +6,17 @@
   --fd-layout-width: 95%;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1440px) {
   #nd-docs-layout {
     --fd-layout-width: 100% !important;
     --fd-sidebar-width: 300px !important;
     grid-template-columns: var(--fd-sidebar-width) 1fr var(--fd-toc-width) !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  #nd-docs-layout {
+    --fd-sidebar-width: 240px !important;
   }
 }
 
