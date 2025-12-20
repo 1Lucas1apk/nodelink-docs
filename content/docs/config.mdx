@@ -171,7 +171,22 @@ Configuration for audio quality, updates, and playback behavior.
     enableHoloTracks: {
       description: 'Enables HoloTracks functionality.',
       type: 'boolean',
-      default: 'true'
+      default: 'false'
+    },
+    enableTrackStreamEndpoint: {
+      description: 'Enables the /v4/trackstream endpoint.',
+      type: 'boolean',
+      default: 'false'
+    },
+    resolveExternalLinks: {
+      description: 'Automatically resolves external links (Spotify/Apple Music) in track metadata.',
+      type: 'boolean',
+      default: 'false'
+    },
+    fetchChannelInfo: {
+      description: 'Automatically fetches detailed channel information for YouTube tracks.',
+      type: 'boolean',
+      default: 'false'
     }
   }}
 />
