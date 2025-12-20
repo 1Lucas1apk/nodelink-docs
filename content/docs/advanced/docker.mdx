@@ -384,6 +384,27 @@ Logs will appear in the `logs` directory on your host machine.
 
 </Accordion>
 
+<Accordion title="Plugins Configuration">
+
+You can configure plugins via environment variables, though complex setups are easier with a mounted `config.js`.
+
+```yaml
+# Load plugins (JSON array string)
+NODELINK_PLUGINS: '[{"name": "my-plugin", "source": "npm"}]'
+
+# Configure specific plugins (JSON object string)
+NODELINK_PLUGINCONFIG: '{"my-plugin": {"token": "123"}}'
+```
+
+For local development or custom plugins, it's recommended to mount the `plugins/` directory:
+
+```yaml
+volumes:
+  - ./plugins:/app/plugins
+```
+
+</Accordion>
+
 </Accordions>
 
 ---
@@ -462,7 +483,7 @@ Available tags:
   <Card title="latest">
     Most recent stable release. Updated with each new version. Safe for production.
   </Card>
-  <Card title="v3.1.1">
+  <Card title="v3.3.0">
     Specific version tags. Pin to a version for consistency. Useful when you want predictable behavior.
   </Card>
   <Card title="dev">

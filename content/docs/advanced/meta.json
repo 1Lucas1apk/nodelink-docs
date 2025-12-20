@@ -1,0 +1,5 @@
+{
+  "title": "Advanced",
+  "description": "NodeLink Advanced Documentation",
+  "pages": ["docker", "prometheus", "plugin-development"]
+}

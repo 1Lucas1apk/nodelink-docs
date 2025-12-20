@@ -1,0 +1,317 @@
+---
+title: Plugin Development
+description: The definitive guide to extending NodeLink. API references, interceptors, and best practices.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { TypeTable } from 'fumadocs-ui/components/type-table';
+
+# Plugin Development Guide
+
+<Callout type="warn" title="Developer Warning">
+  Writing plugins requires a solid understanding of JavaScript, Node.js, and asynchronous programming. You have full access to the server internals. **You can crash the server.** Proceed with caution and curiosity.
+</Callout>
+
+NodeLink's plugin system is designed to be **native** and **low-overhead**. Plugins are just JavaScript modules that NodeLink loads at startup. They have access to the internal `nodelink` instance, allowing you to hook into the API, the audio pipeline, and the event system.
+
+---
+
+## 1. Architecture & Lifecycle
+
+NodeLink uses a **Cluster Architecture**. This means your plugin runs in multiple processes simultaneously, but with different roles.
+
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 my-6">
+  <Card title="Master Process" icon="👑">
+    **Context:** `master`
+    
+    The central brain. It handles the REST API, the WebSocket connection with Discord bots, and manages the worker processes.
+    
+    **Use this for:**
+    - Custom API Endpoints (`/v4/my-route`)
+    - Intercepting Player Commands (`play`, `volume`, etc.)
+    - Intercepting WebSocket Packets
+    - Modifying Track Metadata
+  </Card>
+  <Card title="Worker Process(es)" icon="👷">
+    **Context:** `worker`
+    
+    The heavy lifters. Each worker handles a subset of players, decoding audio, applying filters, and sending UDP packets.
+    
+    **Use this for:**
+    - Custom Audio Sources (Search & Resolve)
+    - Custom Audio Filters (DSP)
+    - Raw Audio Interceptors (PCM Manipulation)
+  </Card>
+</div>
+
+### Directory Structure
+
+```text
+NodeLink/
+└── plugins/
+    └── my-plugin/
+        ├── package.json  (Required)
+        └── index.js      (Entry point)
+```
+
+**`package.json`** is standard NPM format. `name`, `version`, and `main` are required.
+
+---
+
+## 2. Master Context API
+
+These methods are available when `context.type === 'master'`.
+
+### Register Route
+
+Expose new REST endpoints. Useful for dashboards, webhooks, or custom controls.
+
+**Signature:** `nodelink.registerRoute(method, path, handler)`
+
+<TypeTable
+  type={{
+    method: { type: 'string', description: 'HTTP Method (GET, POST, etc.)' },
+    path: { type: 'string', description: 'URL Path (e.g. /v4/hello)' },
+    handler: { type: 'function', description: '(nodelink, req, res, sendResponse) => void' }
+  }}
+/>
+
+```javascript
+nodelink.registerRoute('POST', '/v4/my-plugin/trigger', async (nodelink, req, res, sendResponse) => {
+  const body = req.body; // JSON body is already parsed if content-type is application/json
+  
+  nodelink.logger('info', 'MyPlugin', `Triggered with: ${body.action}`);
+  
+  sendResponse(req, res, { success: true }, 200);
+});
+```
+
+### Player Interceptor
+
+Intercept commands sent to players **before** they are processed or sent to workers. This is the "Gatekeeper".
+
+**Signature:** `nodelink.registerPlayerInterceptor(callback)`
+
+<TypeTable
+  type={{
+    callback: { 
+      type: 'async function', 
+      description: '(action, guildId, args) => result | null' 
+    }
+  }}
+/>
+
+**Actions:** `'play'`, `'stop'`, `'pause'`, `'seek'`, `'volume'`, `'filters'`, `'updateVoice'`, `'destroy'`.
+
+```javascript
+nodelink.registerPlayerInterceptor(async (action, guildId, args) => {
+  // Example: Prevent volume > 100
+  if (action === 'volume') {
+    const vol = args[0];
+    if (vol > 100) {
+      // Modify the argument directly to cap it
+      args[0] = 100;
+    }
+  }
+
+  // Example: Block a specific song
+  if (action === 'play') {
+    const track = args[0];
+    if (track.info.title.includes('Baby Shark')) {
+      // Return an object to block execution and return error to client
+      return { error: 'Safety hazard detected.' };
+    }
+  }
+
+  // Return null to let the command proceed
+  return null;
+});
+```
+
+### WebSocket Interceptor
+
+Intercept raw WebSocket messages coming from clients (bots).
+
+**Signature:** `nodelink.registerWebSocketInterceptor(callback)`
+
+<TypeTable
+  type={{
+    callback: { 
+      type: 'async function', 
+      description: '(nodelink, socket, packet, clientInfo) => boolean' 
+    }
+  }}
+/>
+
+```javascript
+nodelink.registerWebSocketInterceptor(async (nodelink, socket, packet, clientInfo) => {
+  if (packet.op === 'my-custom-op') {
+    socket.send(JSON.stringify({ op: 'my-reply', payload: 'Pong!' }));
+    return true; // Return true to STOP NodeLink from processing this packet further
+  }
+  return false; // Continue normal processing
+});
+```
+
+### Track Modifier
+
+Modify track objects right before they are sent to the client (e.g., in `loadTracks` response).
+
+**Signature:** `nodelink.registerTrackModifier(callback)`
+
+```javascript
+nodelink.registerTrackModifier((track) => {
+  // Add custom user data
+  track.userData = { ...track.userData, source: 'modified' };
+  
+  // You can even modify the info
+  if (track.info.sourceName === 'youtube') {
+    track.info.title = `[YT] ${track.info.title}`;
+  }
+});
+```
+
+---
+
+## 3. Worker Context API
+
+These methods are available when `context.type === 'worker'`.
+
+### Register Source
+
+Add a new platform support.
+
+**Signature:** `nodelink.registerSource(name, sourceObject)`
+
+<TypeTable
+  type={{
+    name: { type: 'string', description: 'Internal source name' },
+    sourceObject: { type: 'object', description: 'Instance of your source class' }
+  }}
+/>
+
+**Source Class Interface:**
+
+```javascript
+class MySource {
+  constructor(nodelink) {
+    this.nodelink = nodelink;
+    this.sourceName = 'mysource';
+    this.searchTerms = ['mysearch']; // Enables mysearch:query
+  }
+
+  // Handle 'mysearch:query'
+  async search(query) { 
+    // Return { loadType: 'search', data: [tracks] }
+  }
+
+  // Handle direct URLs
+  async resolve(url) { 
+    // Return { loadType: 'track', data: track }
+  }
+
+  // Get playback URL/stream for a track
+  async getTrackUrl(trackInfo) { 
+    return {
+      url: "https://stream.example.com/audio.mp3",
+      protocol: "https", // 'https', 'hls', 'http'
+      format: "mp3"      // 'mp3', 'opus', 'aac', 'flac'
+    };
+  }
+}
+```
+
+### Register Filter
+
+Implement custom DSP filters. **Warning: This runs on the audio thread loop.**
+
+**Signature:** `nodelink.registerFilter(name, filterObject)`
+
+```javascript
+class ClipperFilter {
+  constructor() { 
+    this.threshold = 1.0; 
+  }
+
+  update(config) { 
+    // Config comes from the 'filters' payload in Update Player
+    if (config.clipper) this.threshold = config.clipper.threshold; 
+  }
+
+  process(chunk) {
+    // chunk is a Buffer containing 16-bit signed integer PCM
+    // Modify it in place or return a new buffer
+    return chunk; 
+  }
+}
+
+nodelink.registerFilter('clipper', new ClipperFilter());
+```
+
+### Audio Interceptor
+
+Inject a `Transform` stream into the pipeline. Use this for things like recording audio, silence detection, or complex buffering.
+
+**Signature:** `nodelink.registerAudioInterceptor(factory)`
+
+```javascript
+const { Transform } = await import('node:stream');
+
+nodelink.registerAudioInterceptor(() => {
+  return new Transform({
+    transform(chunk, encoding, callback) {
+      // 'chunk' is raw PCM. 
+      // Do whatever you want, then push it.
+      this.push(chunk);
+      callback();
+    }
+  });
+});
+```
+
+---
+
+## 4. Communication (IPC)
+
+Sometimes Master needs to talk to Workers or vice-versa.
+
+### Master to Worker
+Use `nodelink.workerManager.execute(worker, type, payload)`.
+
+```javascript
+// Master
+const worker = nodelink.workerManager.getBestWorker();
+const result = await nodelink.workerManager.execute(worker, 'myPluginCommand', { foo: 'bar' });
+```
+
+### Worker Handling
+Register a **Worker Interceptor** to handle the custom command.
+
+```javascript
+// Worker
+nodelink.registerWorkerInterceptor(async (type, payload) => {
+  if (type === 'myPluginCommand') {
+    // Do logic
+    return true; // Block default handler, although for custom types it doesn't matter
+  }
+});
+```
+
+*(Note: Currently, direct custom IPC responses from worker to master require hooking into the internal command queue or using side-channels, but interceptors allow you to execute logic).*
+
+---
+
+## 5. Development Checklist
+
+1.  **Check Context:** Always wrap logic in `if (context.type === '...')`.
+2.  **Log Smart:** Use `nodelink.logger(level, category, message)` for consistent logs.
+3.  **Handle Errors:** A crash in a plugin crashes the server. Use `try/catch`.
+4.  **No Blocking:** Never block the event loop in `worker` context. Audio will stutter immediately.
+
+<Callout type="info" title="Need Examples?">
+  Check out the built-in `nodelink-sample-plugin` in the `plugins/` directory of the repository for a fully working reference implementation.
+</Callout>
