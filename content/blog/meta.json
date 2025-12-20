@@ -2,6 +2,7 @@
   "title": "Updates",
   "pages": [
     "index",
+    "plugin-system",
     "audio-mixer"
   ]
 }

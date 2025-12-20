@@ -1,0 +1,77 @@
+---
+title: API Reference
+description: Complete reference for NodeLink's REST and WebSocket APIs.
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# NodeLink API Reference
+
+NodeLink implements the **Lavalink v4 API** specification while adding unique features for enhanced functionality. This reference covers all available endpoints, events, and data structures.
+
+## Core APIs
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <Card title="WebSocket API" href="/docs/api/websocket" icon="🔌">
+    Real-time communication.
+    
+    - Handshaking & Resuming
+    - Player Events (Start, End, Exception)
+    - Server Statistics
+  </Card>
+  <Card title="REST API" href="/docs/api/rest" icon="🌐">
+    HTTP endpoints for management.
+    
+    - Resolving Tracks & Searching
+    - Player Control (Play, Stop, Filter)
+    - Session Management
+  </Card>
+</div>
+
+## NodeLink Extensions
+
+These features are exclusive to NodeLink or extend the standard behavior.
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <Card title="NodeLink Features" href="/docs/api/nodelink-features" icon="✨">
+    Exclusive capabilities.
+    
+    - **Audio Mixer:** Overlay TTS/SFX
+    - **Holo Tracks:** Rich Metadata
+    - **Lyrics:** Synced & Plain
+    - **Chapters:** Video markers
+    - **Direct Streaming:** HTTP access
+  </Card>
+  <Card title="Configuration" href="/docs/config" icon="⚙️">
+    Server setup.
+    
+    - Enabling sources
+    - Tuning limits
+    - Docker environment
+  </Card>
+</div>
+
+## Quick Reference: Search Prefixes
+
+When calling `/v4/loadtracks`, you can use these prefixes to search specific sources:
+
+| Prefix | Source | Description |
+| :--- | :--- | :--- |
+| `ytsearch:` | YouTube | Standard video search |
+| `ytmsearch:` | YouTube Music | Music-only search |
+| `scsearch:` | SoundCloud | Track search |
+| `spsearch:` | Spotify | Metadata search (mirrors to YouTube) |
+| `amsearch:` | Apple Music | Metadata search (mirrors to YouTube) |
+| `dzsearch:` | Deezer | Direct audio search |
+| `tdsearch:` | Tidal | Metadata search (mirrors to YouTube) |
+| `bcsearch:` | Bandcamp | Track search |
+| `jssearch:` | JioSaavn | Track search |
+| `pdsearch:` | Pandora | Track search |
+| `ncsearch:` | NicoVideo | Video search |
+| `gtts:` | Google TTS | Generate speech audio |
+| `ftts:` | Flowery TTS | Generate speech via Flowery API |
+
+<Callout type="info">
+  You can also pass direct URLs (e.g., `https://www.youtube.com/watch?v=...`) without any prefix.
+</Callout>

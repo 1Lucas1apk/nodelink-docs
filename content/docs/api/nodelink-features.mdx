@@ -23,6 +23,15 @@ Features unique to NodeLink that extend beyond standard Lavalink compatibility.
     The mixer works by intercepting the main audio stream and digitally mixing the PCM data from auxiliary sources before encoding. It features intelligent buffering to handle sources that download faster than real-time (like TTS) and automatic clamping to prevent audio distortion.
   </ApiSection>
 
+  <ApiSection title="Endpoints">
+    The mixer exposes a full REST API for managing layers:
+
+    - `POST /v4/sessions/:sessionId/players/:guildId/mix` - Add a new layer
+    - `GET /v4/sessions/:sessionId/players/:guildId/mix` - List active layers
+    - `PATCH /v4/sessions/:sessionId/players/:guildId/mix/:mixId` - Update layer volume
+    - `DELETE /v4/sessions/:sessionId/players/:guildId/mix/:mixId` - Remove a layer
+  </ApiSection>
+
   <ApiSection title="WebSocket Events">
     <Accordions>
       <Accordion title="MixStartedEvent">
@@ -711,6 +720,112 @@ NodeLink includes additional audio filters beyond the standard Lavalink filters,
   }
 }
 ```
+  </ApiSection>
+</ApiCard>
+
+## Multi-Audio Track Support
+
+NodeLink supports selecting specific audio tracks for videos that contain multiple audio streams (e.g., Netflix-style dubs, multi-language YouTube videos).
+
+<ApiCard name="Audio Track Selector" isNew method="FEATURE" url="audioTrackId" description="Select a specific audio language/track for playback.">
+  <ApiSection title="How to use">
+    **1. Check for available tracks**
+    
+    When you load a track (especially from YouTube), the response includes an `audioTracks` array inside `pluginInfo`. This lists all available audio streams for that video.
+
+```json
+"pluginInfo": {
+    "audioTracks": [
+        {
+            "id": "en",
+            "name": "English (Original)",
+            "isDefault": true,
+            "isAutoDubbed": false
+        },
+        {
+            "id": "pt-br",
+            "name": "Portuguese (Brazil)",
+            "isDefault": false,
+            "isAutoDubbed": true
+        }
+    ]
+}
+```
+
+    **2. Select a track**
+    
+    By default, NodeLink plays the **default/original** audio. To play a different track (e.g., Portuguese dub), pass the `audioTrackId` in the `track` object when updating the player.
+
+```bash
+curl -X PATCH "http://your-server.com/v4/sessions/{sessionId}/players/{guildId}" \
+     -H "Authorization: yourPassword" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "track": {
+         "encoded": "...",
+         "audioTrackId": "pt-br"
+       }
+     }'
+```
+  </ApiSection>
+
+  <ApiSection title="Use Cases">
+    - **Multi-language Videos**: Allow users to switch between original audio and dubbed versions.
+    - **Descriptive Audio**: Select audio tracks with descriptive commentary for accessibility.
+  </ApiSection>
+</ApiCard>
+
+## Multi-Audio Track Support
+
+NodeLink supports selecting specific audio tracks for videos that contain multiple audio streams (e.g., Netflix-style dubs, multi-language YouTube videos).
+
+<ApiCard name="Audio Track Selector" isNew method="FEATURE" url="audioTrackId" description="Select a specific audio language/track for playback.">
+  <ApiSection title="How to use">
+    **1. Check for available tracks**
+    
+    When you load a track (especially from YouTube), the response includes an `audioTracks` array inside `pluginInfo`. This lists all available audio streams for that video.
+
+    To see this information, you must load the track using `loadTracks`.
+
+```json
+"pluginInfo": {
+    "audioTracks": [
+        {
+            "id": "en",
+            "name": "English (Original)",
+            "isDefault": true,
+            "isAutoDubbed": false
+        },
+        {
+            "id": "pt-br",
+            "name": "Portuguese (Brazil)",
+            "isDefault": false,
+            "isAutoDubbed": true
+        }
+    ]
+}
+```
+
+    **2. Select a track**
+    
+    By default, NodeLink plays the **default/original** audio. To play a different track (e.g., Portuguese dub), pass the `audioTrackId` in the `track` object when updating the player.
+
+```bash
+curl -X PATCH "http://your-server.com/v4/sessions/{sessionId}/players/{guildId}" \
+     -H "Authorization: yourPassword" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "track": {
+         "encoded": "...",
+         "audioTrackId": "pt-br"
+       }
+     }'
+```
+  </ApiSection>
+
+  <ApiSection title="Use Cases">
+    - **Multi-language Videos**: Allow users to switch between original audio and dubbed versions.
+    - **Descriptive Audio**: Select audio tracks with descriptive commentary for accessibility.
   </ApiSection>
 </ApiCard>
 

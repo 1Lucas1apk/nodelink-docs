@@ -1,0 +1,88 @@
+---
+title: Plugin System - The Power of JavaScript
+description: NodeLink's plugin system allows you to inject code directly into the server. Learn the philosophy, the risks, and the possibilities.
+date: 2025-12-19
+authors: [PerformanC]
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+# The Plugin System is Here 🔌
+
+NodeLink has always been about flexibility. But today, we are taking it a step further. We are introducing a **native Plugin System**.
+
+No more waiting for us to implement a specific feature. No more hacking the core code. You can now inject your own logic, sources, and filters directly into NodeLink using the same language you know and love: **JavaScript**.
+
+<Callout type="info" title="Why JavaScript?">
+  Other audio servers require you to write plugins in Java or Kotlin, compile them into `.jar` files, and deal with complex class loaders.
+  
+  NodeLink plugins are just `.js` files. Drop them in, and they run. Simple.
+</Callout>
+
+---
+
+## ⚠️ Important Disclaimer
+
+<Callout type="warn" title="With Great Power Comes Great Responsibility">
+  The Plugin System grants your code **unrestricted access** to the NodeLink runtime. Plugins run with the same privileges as the server itself.
+  
+  **Please understand:**
+  
+  *   **Stability:** A poorly written plugin can crash your server, leak memory, or freeze the audio loop.
+  *   **Security:** Plugins can access the file system, network, and environment variables. Only install plugins from sources you trust.
+  *   **Support:** The **PerformanC** and **Ecliptia** communities are **not responsible** for errors, crashes, or data loss caused by third-party plugins.
+  
+  If you modify NodeLink via plugins, you are the engineer. We provide the tools, but you build the machine. If you need help, our community channels are open for developer discussions, but official support covers the core server only.
+</Callout>
+
+---
+
+## What can you actually do?
+
+The possibilities are pretty wild. Because NodeLink is modular, we exposed hooks into almost every part of the lifecycle.
+
+<Cards>
+  <Card title="Custom Sources" description="Add support for niche sites like Mixcloud, radio stations, or even your own internal API. If you can fetch a URL, you can play it." />
+  <Card title="Audio Filters" description="Implement custom DSP logic. Want a 'Telephone' filter? Or a 'Bass Boost' that actually destroys speakers? Do it in the Worker context." />
+  <Card title="New Endpoints" description="Register your own REST API routes under /v4. Build a dashboard backend, a metrics exporter, or a custom control interface." />
+  <Card title="Interceptors" description="Intercept every 'play' command to block songs, modify volume, or log usage. Intercept WebSocket packets to add custom OP codes." />
+</Cards>
+
+## How it works (The Architecture)
+
+NodeLink runs in a **Cluster** (Master + Workers). The plugin system respects this architecture, and you need to code accordingly.
+
+### The Master Context
+Your plugin code runs in the **main process**. 
+*   **Responsibilities:** Handling API requests, managing WebSocket connections with bots, and orchestrating the worker fleet.
+*   **What you can do:** Register API routes, intercept player commands (play/stop/volume), intercept incoming WebSocket messages.
+
+### The Worker Context
+Your plugin code runs in the **audio processing nodes**.
+*   **Responsibilities:** Decoding audio, processing filters (DSP), and sending UDP packets to Discord.
+*   **What you can do:** Register new audio sources, create custom audio filters, intercept raw PCM data.
+
+You simply export a function that checks `context.type` and runs the appropriate logic.
+
+```javascript
+export default async function(nodelink, config, context) {
+  if (context.type === 'master') {
+    nodelink.logger('info', 'MyPlugin', 'Hello from Master! I control the API.');
+  }
+  
+  if (context.type === 'worker') {
+    nodelink.logger('info', 'MyPlugin', 'Hello from Worker! I control the Audio.');
+  }
+}
+```
+
+## Get Started
+
+Ready to break things (and fix them)? Check out the developer guide.
+
+<Cards>
+  <Card title="Plugin Development Guide" href="/docs/advanced/plugin-development" />
+  <Card title="Browse Plugins" href="/docs/plugins" />
+</Cards>

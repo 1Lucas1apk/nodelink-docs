@@ -5,7 +5,8 @@
     "docker",
     "config",
     "api",
-    "advenced",
+    "advanced",
+    "plugins",
     "differences",
     "prometheus",
     "troubleshooting"
