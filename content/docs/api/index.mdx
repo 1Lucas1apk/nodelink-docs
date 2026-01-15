@@ -72,13 +72,32 @@ When calling `/v4/loadtracks`, you can use these prefixes to search specific sou
 | `vksearch:` | VK Music | Track search |
 | `mcsearch:` | Mixcloud | Track search |
 | `ncsearch:` | NicoVideo | Video search |
+| `nicovideo:` | NicoVideo | Alias of `ncsearch:` |
 | `bilibili:` | Bilibili | Video search |
 | `gtts:` | Google TTS | Generate speech audio |
+| `speak:` | Google TTS | Alias of `gtts:` |
 | `ftts:` | Flowery TTS | Generate speech via Flowery API |
 | `flowery:` | Flowery TTS | Alias of `ftts:` |
 
 <Callout type="info">
   You can also pass direct URLs (e.g., `https://www.youtube.com/watch?v=...`) without any prefix.
+</Callout>
+
+## Search Type Modifiers
+
+Some sources accept a **type modifier** right after the prefix. The format is:
+
+`<prefix>:<type>:<query>`
+
+Supported types: `track` (default), `playlist`, `album`, `artist`, `channel`.
+
+Example:
+
+- `ytsearch:playlist:billie eilish` (returns playlist results)
+- `ytmsearch:album:daft punk` (returns album results)
+
+<Callout type="warn">
+  Playlist and channel search results are **not playable tracks**. Use the returned `info.uri` to call `/v4/loadtracks` and then play the resulting playlist tracks.
 </Callout>
 
 ## Recommendation Prefixes

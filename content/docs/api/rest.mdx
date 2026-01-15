@@ -176,12 +176,22 @@ curl -X GET "http://your-server.com/v4/loadtracks?identifier=ytsearch:never%20go
 ```
   </ApiSection>
   <ApiSection title="Query Parameters">
-    <ApiSchema name="identifier" type="string" required description="URL, search query (prefix: ytsearch:, spsearch:, scsearch:, search:), playlist URL, or local path." />
+    <ApiSchema name="identifier" type="string" required description="URL, search query (prefix: ytsearch:, spsearch:, scsearch:, search:), playlist URL, or local path. Some prefixes accept a type modifier like :playlist: or :album:." />
   </ApiSection>
   <ApiSection title="Identifier Notes">
     <Accordions>
       <Accordion title="Unified Search">
         Use `search:query` to search across `unifiedSearchSources`.
+      </Accordion>
+      <Accordion title="Search Type Modifiers">
+        Use `<prefix>:<type>:<query>` to filter the result kind (where supported).
+
+        - Types: `track` (default), `playlist`, `album`, `artist`, `channel`
+        - Example: `ytsearch:playlist:billie eilish`
+      </Accordion>
+      <Accordion title="Playlist and Channel Results">
+        Some searches (e.g., `ytsearch:playlist:...`) return **playlist/channel entries**, not playable tracks. These items include `pluginInfo.type` like `playlist_result` or `channel_result`.  
+        To play them, call `/v4/loadtracks` again using the returned `info.uri` (for playlists) and queue the resulting tracks.
       </Accordion>
       <Accordion title="Recommendations">
         Use `*rec` prefixes to fetch recommendations (e.g., `ytrec:videoId`, `sprec:seed_tracks=...`).
@@ -190,6 +200,9 @@ curl -X GET "http://your-server.com/v4/loadtracks?identifier=ytsearch:never%20go
         You can pass an absolute path (e.g., `C:\music\track.mp3`) or `local:relative/path.mp3` (resolved against `sources.local.basePath`).
       </Accordion>
     </Accordions>
+  </ApiSection>
+  <ApiSection title="Notes">
+    `frameStats` includes `expected` (total expected frames) and `deficit` when players are active.
   </ApiSection>
   <ApiSection title="Response">
     <Accordions>
@@ -854,6 +867,19 @@ curl -X GET "http://your-server.com/v4/stats" \
 ```
       </Accordion>
     </Accordions>
+  </ApiSection>
+</ApiCard>
+
+<ApiCard name="GetMetrics" method="GET" url="/v4/metrics" description="Returns Prometheus metrics (if enabled).">
+  <ApiSection title="Example Request">
+```bash
+curl -X GET "http://your-server.com/v4/metrics" \
+     -H "Authorization: Bearer yourPassword"
+```
+  </ApiSection>
+  <ApiSection title="Notes">
+    This endpoint is protected by `metrics.authorization.type` and `metrics.authorization.password`.  
+    If `metrics.authorization.password` is empty, the server uses `server.password`.
   </ApiSection>
 </ApiCard>
 
@@ -1545,10 +1571,7 @@ These filters are unique to NodeLink, built from scratch with custom DSP impleme
 curl -X PATCH "http://your-server.com/v4/youtube/config" \
      -H "Authorization: yourPassword" \
      -H "Content-Type: application/json" \
-     -d 
-       "refreshToken": "1//0gN...",
-       "visitorData": "Cgt..."
-     
+     -d '{"refreshToken":"1//0gN...","visitorData":"Cgt..."}'
 ```
   </ApiSection>
 
