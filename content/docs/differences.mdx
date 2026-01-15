@@ -241,6 +241,8 @@ curl "http://your-server.com/v4/trackstream?encodedTrack=QAAAjQI...&itag=251" \
      -H "Authorization: yourPassword"
 ```
 
+NodeLink also supports raw PCM streaming via `/v4/loadstream` (enable with `enableLoadStreamEndpoint: true`) when you need direct audio bytes for recording or custom processing.
+
 **Response:**
 ```json
 {
@@ -436,6 +438,12 @@ Here's where things get interesting. Let's see what's **built-in** vs what needs
     | JioSaavn | 🔌 Plugin | ✅ Built-in |
     | Local Files | ✅ Built-in | ✅ Built-in |
     | HTTP URLs | ✅ Built-in | ✅ Built-in |
+    | Amazon Music | ❌ Not available | ✅ Built-in |
+    | Mixcloud | 🔌 Plugin | ✅ Built-in |
+    | VK Music | 🔌 Plugin | ✅ Built-in |
+    | Telegram | 🔌 Plugin | ✅ Built-in |
+    | Bilibili | 🔌 Plugin | ✅ Built-in |
+    | Pinterest | ❌ Not available | ✅ Built-in |
 
   </Tab>
   <Tab value="Mirror Sources">
@@ -480,9 +488,22 @@ Here's where things get interesting. Let's see what's **built-in** vs what needs
     - `jssearch:` - JioSaavn search
     - `ncsearch:` / `nicovideo:` - NicoVideo search
     - `pdsearch:` - Pandora search
+    - `vksearch:` - VK Music search
+    - `mcsearch:` - Mixcloud search
+    - `bilibili:` - Bilibili search
     - `gtts:` - Google Text-to-Speech
+    - `flowery:` / `ftts:` - Flowery TTS
     - `local:` / `file:` - Local file path
     - `http:` - Direct HTTP URL
+    - `search:` - Unified search across configured sources
+
+    **Recommendation prefixes:**
+    - `ytrec:` - YouTube automix recommendations
+    - `sprec:` - Spotify recommendations
+    - `dzrec:` - Deezer recommendations
+    - `tdrec:` - Tidal recommendations
+    - `jsrec:` - JioSaavn recommendations
+    - `vkrec:` - VK Music recommendations
 
     **Try it:**
     ```bash
@@ -592,6 +613,9 @@ Some sources need tokens. Here's the reality:
     **Tidal** (`token`):
     - Requires a valid authentication token.
 
+    **VK Music** (`userToken` or `userCookie`):
+    - Requires a user token or cookie from a VK web session.
+
     <Callout type="info">
       All these services have **free tiers**. You don't need premium accounts.
     </Callout>
@@ -630,6 +654,11 @@ Some sources need tokens. Here's the reality:
     - Pandora (auto-fetches csrf token)
     - Twitch
     - Last.fm
+    - Amazon Music
+    - Mixcloud
+    - Telegram
+    - Bilibili (optional sessdata)
+    - Pinterest
     - Local files
     - HTTP URLs
     - Google TTS

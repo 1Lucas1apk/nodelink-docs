@@ -68,6 +68,10 @@ Settings related to worker clustering and auto-scaling behavior.
       type: 'number',
       default: '1'
     },
+    specializedSourceWorker: {
+      description: 'Dedicated worker pool for source loading (search, lyrics, etc.).',
+      type: 'object'
+    },
     commandTimeout: {
       description: 'Timeout (ms) for heavy operations like loadTracks.',
       type: 'number',
@@ -82,6 +86,63 @@ Settings related to worker clustering and auto-scaling behavior.
       description: 'Number of retry attempts on timeout or worker failure.',
       type: 'number',
       default: '2'
+    },
+    hibernation: {
+      description: 'Worker hibernation settings for idle periods.',
+      type: 'object'
+    },
+    endpoint: {
+      description: 'Controls the /v4/workers endpoint behavior.',
+      type: 'object'
+    }
+  }}
+/>
+
+### Specialized Source Workers
+
+<TypeTable
+  type={{
+    enabled: {
+      description: 'If true, source loading is delegated to dedicated workers.',
+      type: 'boolean',
+      default: 'true'
+    },
+    count: {
+      description: 'Number of separate process clusters for source operations.',
+      type: 'number',
+      default: '1'
+    },
+    microWorkers: {
+      description: 'Number of worker threads per source process cluster.',
+      type: 'number',
+      default: '2'
+    },
+    tasksPerWorker: {
+      description: 'Max parallel tasks each micro-worker can handle before queuing.',
+      type: 'number',
+      default: '32'
+    },
+    silentLogs: {
+      description: 'If true, micro-workers only log warnings and errors.',
+      type: 'boolean',
+      default: 'true'
+    }
+  }}
+/>
+
+### Hibernation
+
+<TypeTable
+  type={{
+    enabled: {
+      description: 'If true, idle workers enter efficiency mode to reduce CPU usage.',
+      type: 'boolean',
+      default: 'true'
+    },
+    timeoutMs: {
+      description: 'Idle time (ms) before a worker enters hibernation.',
+      type: 'number',
+      default: '1200000'
     }
   }}
 />
@@ -126,6 +187,38 @@ These settings control the `cluster.scaling` behavior.
       description: 'How many commands in queue per active worker trigger scale up.',
       type: 'number',
       default: '5'
+    },
+    lagPenaltyLimit: {
+      description: 'Event loop lag threshold (ms) that increases worker cost.',
+      type: 'number',
+      default: '60'
+    },
+    cpuPenaltyLimit: {
+      description: 'CPU usage threshold (0-1) that increases worker cost.',
+      type: 'number',
+      default: '0.85'
+    }
+  }}
+/>
+
+### Workers Endpoint
+
+<TypeTable
+  type={{
+    patchEnabled: {
+      description: 'If true, PATCH /v4/workers can terminate a worker.',
+      type: 'boolean',
+      default: 'true'
+    },
+    allowExternalPatch: {
+      description: 'If true, allows non-loopback clients to use PATCH /v4/workers.',
+      type: 'boolean',
+      default: 'false'
+    },
+    code: {
+      description: 'Shared secret required for PATCH /v4/workers.',
+      type: 'string',
+      default: '"CAPYBARA"'
     }
   }}
 />
@@ -158,6 +251,11 @@ Configuration for audio quality, updates, and playback behavior.
       type: 'number',
       default: '2000'
     },
+    statsUpdateInterval: {
+      description: 'How often worker stats are aggregated (ms).',
+      type: 'number',
+      default: '30000'
+    },
     trackStuckThresholdMs: {
       description: 'Time to wait before declaring a track stuck.',
       type: 'number',
@@ -175,6 +273,11 @@ Configuration for audio quality, updates, and playback behavior.
     },
     enableTrackStreamEndpoint: {
       description: 'Enables the /v4/trackstream endpoint.',
+      type: 'boolean',
+      default: 'false'
+    },
+    enableLoadStreamEndpoint: {
+      description: 'Enables the /v4/loadstream endpoint (raw PCM stream).',
       type: 'boolean',
       default: 'false'
     },
@@ -202,9 +305,9 @@ Configuration for specific music and media providers.
 <TypeTable
   type={{
     defaultSearchSource: {
-      description: 'The default source used when none is specified.',
-      type: 'string',
-      default: '"youtube"'
+      description: 'Default sources used when none is specified (fallback order).',
+      type: 'string[]',
+      default: '["youtube", "soundcloud"]'
     },
     unifiedSearchSources: {
       description: 'Sources included in unified search.',
@@ -254,6 +357,11 @@ Configuration for specific music and media providers.
     enabled: { type: 'boolean', default: 'true' },
     clientId: { type: 'string', default: '""' },
     clientSecret: { type: 'string', default: '""' },
+    externalAuthUrl: {
+      description: 'External token provider for auth (optional).',
+      type: 'string',
+      default: '"http://get.1lucas1apk.fun/spotify/gettoken"'
+    },
     market: { type: 'string', default: '"US"' },
     playlistLoadLimit: { 
       description: 'Pages to load (1 = 100 tracks). 0 for no limit.',
@@ -300,9 +408,17 @@ Configuration for specific music and media providers.
   type={{
     deezer: { description: 'Enabled by default. Supports ARL/Decryption Key.', type: 'object' },
     jiosaavn: { description: 'Supports playlist/artist load limits.', type: 'object' },
-    pandora: { description: 'May require manual CSRF token due to region locks.', type: 'object' },
+    vkmusic: { description: 'VK Music source. Supports userToken/userCookie.', type: 'object' },
+    amazonmusic: { description: 'Amazon Music source.', type: 'object' },
+    mixcloud: { description: 'Mixcloud source.', type: 'object' },
+    telegram: { description: 'Telegram audio source.', type: 'object' },
+    bilibili: { description: 'Bilibili source (supports sessdata).', type: 'object' },
+    genius: { description: 'Genius source.', type: 'object' },
+    pinterest: { description: 'Pinterest source.', type: 'object' },
+    pandora: { description: 'May require manual CSRF token or remoteTokenUrl due to region locks.', type: 'object' },
     local: { description: 'Local file playback. Base path configurable.', type: 'object' },
     http: { description: 'Direct HTTP stream playback.', type: 'boolean' },
+    soundcloud: { description: 'SoundCloud source (optional clientId).', type: 'object' },
     'google-tts': { 
       description: 'Google Text-to-Speech. Configurable language.', 
       type: 'object',
@@ -312,6 +428,60 @@ Configuration for specific music and media providers.
       description: 'Flowery TTS. Configurable voice, speed, silence.', 
       type: 'object',
       default: '{ voice: "Salli", speed: 1.0 }'
+    }
+  }}
+/>
+
+### VK Music
+
+<TypeTable
+  type={{
+    enabled: { type: 'boolean', default: 'true' },
+    userToken: {
+      description: 'Optional VK user token from web session.',
+      type: 'string',
+      default: '""'
+    },
+    userCookie: {
+      description: 'VK cookie header from web session (required if userToken is empty).',
+      type: 'string',
+      default: '""'
+    },
+    recommendationsLoadLimit: {
+      description: 'Max recommendation tracks to return.',
+      type: 'number',
+      default: '10'
+    }
+  }}
+/>
+
+### Bilibili
+
+<TypeTable
+  type={{
+    enabled: { type: 'boolean', default: 'true' },
+    sessdata: {
+      description: 'Optional sessdata cookie for premium/4k access.',
+      type: 'string',
+      default: '""'
+    }
+  }}
+/>
+
+### Pandora
+
+<TypeTable
+  type={{
+    enabled: { type: 'boolean', default: 'true' },
+    csrfToken: {
+      description: 'Optional CSRF token (US-only; manual fetch).',
+      type: 'string',
+      default: '""'
+    },
+    remoteTokenUrl: {
+      description: 'Remote token provider URL.',
+      type: 'string',
+      default: '"https://get.1lucas1apk.fun/pandora/gettoken"'
     }
   }}
 />
@@ -337,7 +507,7 @@ Configuration for lyrics providers.
   }}
 />
 
-**Supported Providers:** YouTube, Genius, Musixmatch, LRCLib, Apple Music.
+**Supported Providers:** YouTube, Genius, Musixmatch, LRCLib, Apple Music, Bilibili.
 
 ---
 
@@ -384,6 +554,25 @@ Configuration for lyrics providers.
       description: 'List of IP blocks to use.',
       type: 'string[]',
       default: '[]'
+    }
+  }}
+/>
+
+---
+
+## Voice Receive
+
+<TypeTable
+  type={{
+    enabled: {
+      description: 'Enables receiving voice from Discord.',
+      type: 'boolean',
+      default: 'false'
+    },
+    format: {
+      description: 'Audio format for incoming voice data.',
+      type: 'string',
+      default: '"opus"'
     }
   }}
 />
