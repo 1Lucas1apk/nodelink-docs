@@ -127,12 +127,11 @@ administrative, or monitoring-oriented are excluded from the minimum.
 
 **Minimum support**
 - `voice.channelId` in Update Player payloads
-- `track.audioTrackId` in Update Player payloads
 
 <Accordions>
   <Accordion title="Why it matters for clients">
     NodeLink extends the Update Player schema. Clients must pass and preserve
-    these fields to enable multi-audio selection and proper voice channel usage.
+    `voice.channelId` for DAVE stability during voice connections.
   </Accordion>
 </Accordions>
 
@@ -158,10 +157,12 @@ administrative, or monitoring-oriented are excluded from the minimum.
 These features are available in NodeLink but are not part of the minimum
 compatibility bar for clients:
 
-- `/v4/connection` (connection metrics)
-- `/v4/encodedtracks` (batch encode)
-- `search:` unified search
-- `playlist:` search modifier
+- `/v4/connection` (connection metrics endpoint used for diagnostics)
+- `/v4/encodedtracks` (batch track encoding helper)
+- `search:` unified search prefix for `/v4/loadtracks`
+- `:playlist:` type modifier in search prefixes (example: `scsearch:playlist:lofi`)
+- `track.audioTrackId` in Update Player payloads (optional; defaults to original
+  audio unless the client selects an alternate YouTube auto-dubbed track)
 
 ---
 

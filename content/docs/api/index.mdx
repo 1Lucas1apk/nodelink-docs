@@ -91,16 +91,20 @@ When calling `/v4/loadtracks`, you can use these prefixes to search specific sou
 
 ## Search Type Modifiers
 
-Some sources accept a **type modifier** right after the prefix. The format is:
+Some sources accept a **type modifier** right after the prefix. This is not
+exclusive to YouTube; SoundCloud and other sources also parse type modifiers.
+The format is:
 
 `<prefix>:<type>:<query>`
 
 Supported types: `track` (default), `playlist`, `album`, `artist`, `channel`.
 
-Example:
+Examples:
 
 - `ytsearch:playlist:billie eilish` (returns playlist results)
 - `ytmsearch:album:daft punk` (returns album results)
+- `scsearch:playlist:lofi beats` (returns SoundCloud playlists)
+- `scsearch:user:trap nation` (returns SoundCloud users)
 
 <Callout type="warn">
   Playlist and channel search results are **not playable tracks**. Use the returned `info.uri` to call `/v4/loadtracks` and then play the resulting playlist tracks.
