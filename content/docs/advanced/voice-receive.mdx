@@ -104,8 +104,3 @@ ws.on('message', (data) => {
 });
 ```
 
-## Limitations
-
-- **Performance**: Decoding `pcm_s16le` for many users simultaneously is CPU intensive.
-- **Filtering**: Currently, audio is relayed exactly as received from Discord (post-decryption). NodeLink filters are NOT applied to received audio.
-- **DAVE**: Support for Discord Audio Visual Encryption is handled automatically by the underlying voice engine.
